@@ -1,0 +1,9 @@
+services:
+  lite-sns-devenvs:
+    image: whoatemyapplepie/lite-sns-devenvs:1.0.0
+    build:
+      context: .
+    container_name: lite-sns-devenvs
+    volumes:
+      - ../src:/project
+    tty: true
