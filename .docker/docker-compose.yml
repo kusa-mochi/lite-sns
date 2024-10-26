@@ -5,5 +5,5 @@ services:
       context: .
     container_name: lite-sns-devenvs
     volumes:
-      - ../src:/project
+      - ../:/project
     tty: true
