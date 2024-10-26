@@ -36,5 +36,5 @@ echo collecting the programs...
 cd ${WORK_DIR}/..
 mkdir -p dist
 cp ./src/cmd/app_server/app_server ./dist/
-cp ./src/cmd/auth_server/auth_server ./dist/
+cp ./src/cmd/auth_server/auth_server ./src/cmd/auth_server/auth_server_config.json ./dist/
 echo collected.

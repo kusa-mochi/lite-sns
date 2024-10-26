@@ -5,7 +5,8 @@ services:
       context: .
     container_name: lite-sns-devenvs
     ports:
-      - 8080:8080
+      - 18080:18080
+      - 18081:18081
     volumes:
       - ../:/project
     tty: true

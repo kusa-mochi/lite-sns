@@ -1,0 +1,4 @@
+{
+    "addr": "localhost:18081",
+    "secret_key": "SECRET_KEY"
+}

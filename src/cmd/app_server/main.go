@@ -15,5 +15,5 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.Run()
+	r.Run(":18080")
 }

@@ -2,7 +2,10 @@ module lite-sns/m
 
 go 1.22.8
 
-require github.com/gin-gonic/gin v1.10.0
+require (
+	github.com/gin-gonic/gin v1.10.0
+	github.com/golang-jwt/jwt/v5 v5.2.1
+)
 
 require (
 	github.com/bytedance/sonic v1.12.3 // indirect
