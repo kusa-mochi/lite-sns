@@ -3,6 +3,12 @@
 cd `dirname $0`
 WORK_DIR=`pwd`
 
+# download dependencies for the servers
+echo start go mod tidy...
+cd ${WORK_DIR}/..
+go mod tidy
+echo end go mod tidy.
+
 # build the app server
 echo building the app server...
 cd ${WORK_DIR}/../src/cmd/app_server
