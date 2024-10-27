@@ -10,12 +10,12 @@ import (
 func main() {
 	log.Println("auth server started")
 
-	configFile, err := os.Open("auth_server_config.json")
+	// read the config file.
+	configFile, err := os.Open("./server_config.json")
 	if err != nil {
 		log.Fatal("failed to open the config file")
 	}
 	defer configFile.Close()
-
 	configContents, err := io.ReadAll(configFile)
 	if err != nil {
 		log.Fatal("failed to read the config file")
@@ -23,6 +23,9 @@ func main() {
 
 	var config AuthServerOptions
 	json.Unmarshal(configContents, &config)
+
+	log.Println("auth server addr:", config.Addr)
+	log.Println("secret key:", config.SecretKey)
 
 	server := NewAuthServer(&config)
 	server.Run()

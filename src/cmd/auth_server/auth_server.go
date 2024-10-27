@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -20,11 +21,13 @@ type AuthServer struct {
 }
 
 type AuthServerOptions struct {
-	Addr      string `json:"addr"`
+	Addr      string `json:"auth_server_addr"`
 	SecretKey string `json:"secret_key"`
 }
 
 func NewAuthServer(options *AuthServerOptions) *AuthServer {
+	fmt.Println("*** options ***")
+	fmt.Println(*options)
 	return &AuthServer{
 		router:      nil,
 		accessToken: "",
@@ -35,6 +38,7 @@ func NewAuthServer(options *AuthServerOptions) *AuthServer {
 func (s *AuthServer) Run() error {
 	s.router = gin.Default()
 	s.router.POST("/token", s.Token)
+	log.Println("running auth server on ", s.options.Addr)
 	return s.router.Run(s.options.Addr)
 }
 
@@ -43,11 +47,12 @@ func (s *AuthServer) Token(c *gin.Context) {
 		"exp": time.Now().Add(TOKEN_LIFETIME).Unix(),
 	})
 
-	tokenString, err := token.SignedString(s.options.SecretKey)
+	tokenString, err := token.SignedString([]byte(s.options.SecretKey))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "failed to generate new token",
+			"error": "failed to generate a new token",
 		})
+		return
 	}
 
 	s.accessToken = tokenString
