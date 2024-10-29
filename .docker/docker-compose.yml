@@ -10,3 +10,18 @@ services:
     volumes:
       - ../:/project
     tty: true
+  db:
+    image: postgres:17.0-alpine3.20
+    restart: always
+    shm_size: 128mb
+    container_name: lite-sns-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: postgres
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
