@@ -1,0 +1,70 @@
+@startuml 1-1_register-user
+
+== サインアップ ==
+
+actor ユーザー as user
+actor ユーザーのメーラー as mailer
+participant フロントエンド as frontend
+participant バックエンド as backend
+database DB
+
+user ->> frontend : 「サインアップ」ボタン押下
+frontend -> backend : サインアップ画面表示　リクエスト
+group アクセストークン発行
+    backend -> backend : アクセストークン　発行
+    backend -> DB : アクセストークン　登録
+    DB -> DB : アクセストークン　追加
+    DB --> backend : 登録成功／失敗
+end
+backend --> frontend : アクセストークン
+frontend -> frontend : サインアップ画面　表示
+user ->> frontend : メールアドレス\nユーザー名\nパスワード
+user ->> frontend : 「サインアップ」ボタン押下
+frontend -> backend : メールアドレス\nユーザー名\nパスワード\nアクセストークン
+group アクセストークン検証
+    backend -> DB : アクセストークン検証
+    DB -> DB : アクセストークン　検索
+    DB --> backend : アクセストークン　登録済／未登録
+end
+group アクセストークン削除
+    backend -> DB : アクセストークン削除
+    DB -> DB : アクセストークン　検索・削除
+    DB --> backend : 削除成功／失敗
+end
+note over backend, DB : メール認証用にアクセストークンを再発行する。\nスクリプトでアカウントを量産されないようにするための措置。
+ref over backend, DB : アクセストークン発行
+backend -> DB : 仮登録\n  メールアドレス\n  パスワードのハッシュ\n  アクセストークン
+DB -> DB : 仮登録リストに\n  メールアドレス\n  パスワード\n  アクセストークン\nを追加
+backend --> frontend : 仮登録完了
+frontend -> frontend : 仮登録完了画面　表示
+backend ->> mailer : 認証用メール\n  アクセストークン\n  含む
+user ->> mailer : メールを開く
+user ->> frontend : 認証用リンク\n  アクセストークン\n  含む\nにアクセス
+frontend -> backend : アクセストークン
+ref over backend, DB : アクセストークン検証
+group アカウント本登録
+    backend -> DB : メールアドレス\nパスワードのハッシュ
+    DB -> DB : アカウントリストに追加\n  メールアドレス\n  パスワードのハッシュ
+    DB --> backend : アカウント　追加成功／失敗
+end
+backend --> frontend : 検証成功／失敗
+frontend -> frontend : メール認証成功画面　表示
+
+== サインイン ==
+
+user ->> frontend : 「サインイン」ボタン押下
+note right : メール認証成功画面またはサイト紹介画面の\n「サインイン」ボタンを押下
+frontend -> frontend : サインイン画面　表示
+user ->> frontend : メールアドレス\nパスワード
+user ->> frontend : 「サインイン」ボタン押下
+frontend -> backend : メールアドレス\nパスワード
+group パスワード認証
+    backend -> DB : メールアドレス\nパスワードのハッシュ
+    DB -> DB : メールアドレスと\nパスワードのハッシュの\n完全一致検索
+    DB --> backend : アカウント登録済／未登録
+end
+ref over backend, DB : アクセストークン発行
+backend --> frontend : アクセストークン
+note over backend, DB : 以降のユーザー操作に伴うバックエンド処理は\nアクセストークンの有効期限が切れるかログアウトされるまで\nアクセストークンを用いて行う。
+
+@enduml
