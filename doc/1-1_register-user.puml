@@ -11,9 +11,10 @@ database DB
 user ->> frontend : 「サインアップ」ボタン押下
 frontend -> backend : サインアップ画面表示　リクエスト
 group アクセストークン発行
+    backend -> backend : 秘密鍵　生成
     backend -> backend : アクセストークン　発行
-    backend -> DB : アクセストークン　登録
-    DB -> DB : アクセストークン　追加
+    backend -> DB : アクセストークンリストに追加\n  アクセストークン\n  秘密鍵
+    DB -> DB : 秘密鍵　追加
     DB --> backend : 登録成功／失敗
 end
 backend --> frontend : アクセストークン
@@ -23,12 +24,12 @@ user ->> frontend : 「サインアップ」ボタン押下
 frontend -> backend : メールアドレス\nユーザー名\nパスワード\nアクセストークン
 group アクセストークン検証
     backend -> DB : アクセストークン検証
-    DB -> DB : アクセストークン　検索
+    DB -> DB : 完全一致検索\n  アクセストークン\n  秘密鍵
     DB --> backend : アクセストークン　登録済／未登録
 end
 group アクセストークン削除
     backend -> DB : アクセストークン削除
-    DB -> DB : アクセストークン　検索・削除
+    DB -> DB : 削除\n  アクセストークン\n  秘密鍵
     DB --> backend : 削除成功／失敗
 end
 note over backend, DB : メール認証用にアクセストークンを再発行する。\nスクリプトでアカウントを量産されないようにするための措置。
