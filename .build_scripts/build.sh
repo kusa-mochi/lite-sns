@@ -15,12 +15,6 @@ cd ${WORK_DIR}/../src/cmd/app_server
 go build
 echo the app server was built.
 
-# build the auth server
-echo building the auth server...
-cd ${WORK_DIR}/../src/cmd/auth_server
-go build
-echo the auth server was built.
-
 # build the client
 echo building the client...
 echo the client was build.
