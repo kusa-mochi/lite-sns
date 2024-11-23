@@ -5,8 +5,7 @@ services:
       context: .
     container_name: lite-sns-devenvs
     ports:
-      - 18080:18080
-      - 18081:18081
+      - ${APP_SERVER_PORT}:${APP_SERVER_PORT}
     volumes:
       - ../:/project
     tty: true
@@ -16,7 +15,7 @@ services:
     shm_size: 128mb
     container_name: lite-sns-db
     ports:
-      - 5432:5432
+      - ${DB_SERVER_PORT}:${DB_SERVER_PORT}
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: postgres
