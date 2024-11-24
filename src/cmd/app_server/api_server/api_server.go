@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"lite-sns/m/src/cmd/app_server/commands"
 	"lite-sns/m/src/cmd/app_server/interfaces"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,21 +42,53 @@ func (s *ApiServer) Run() {
 
 // ユーザーアカウント登録リクエストを受け付けるAPI
 func (s *ApiServer) SignupRequest(c *gin.Context) {
-	s.commandCh <- &commands.SignupRequestCommand{}
+	resCh := make(chan string)
+	s.commandCh <- &commands.SignupRequestCommand{
+		ResCh: resCh,
+	}
+	result := <-resCh
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": result,
+	})
 }
 
 // ユーザーアカウント仮登録処理
 func (s *ApiServer) Signup(c *gin.Context) {
-	s.commandCh <- &commands.SignupCommand{}
+	resCh := make(chan string)
+	s.commandCh <- &commands.SignupCommand{
+		ResCh: resCh,
+	}
+	result := <-resCh
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": result,
+	})
 }
 
 // ユーザーアカウント本登録処理
 // 認証用メールのリンクにアクセスされた場合の処理を想定したAPI
 func (s *ApiServer) MailAddrAuth(c *gin.Context) {
-	s.commandCh <- &commands.MailAddrAuthCommand{}
+	resCh := make(chan string)
+	s.commandCh <- &commands.MailAddrAuthCommand{
+		ResCh: resCh,
+	}
+	result := <-resCh
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": result,
+	})
 }
 
 // メールアドレスとパスワードによるサインイン処理
 func (s *ApiServer) Signin(c *gin.Context) {
-	s.commandCh <- &commands.SigninCommand{}
+	resCh := make(chan string)
+	s.commandCh <- &commands.SigninCommand{
+		ResCh: resCh,
+	}
+	result := <-resCh
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": result,
+	})
 }
