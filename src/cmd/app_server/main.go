@@ -1,8 +1,10 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 
@@ -11,12 +13,47 @@ import (
 
 func main() {
 	var (
-		ip   = flag.String("ip", "localhost", "IP address of the app server")
-		port = flag.Int("port", 10081, "port number of the app server")
+		// ip   = flag.String("ip", "localhost", "IP address of the app server")
+		port   = flag.Int("port", 10081, "port number of the app server")
+		dbPort = flag.Int("db_port", 5432, "port number of the db server")
 	)
 	const (
 		apiPathPrefix string = "/lite-sns/api/v1"
 	)
+
+	db, err := sql.Open("postgres", fmt.Sprintf("host=lite-sns-db port=%v user=user password=postgres dbname=lite_sns_db sslmode=disable", *dbPort))
+	// db, err := sql.Open("postgres", fmt.Sprintf("postgres://user:postgres@lite-sns-db:%v/lite_sns_db", *dbPort))
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer db.Close()
+
+	log.Println("DB connected")
+
+	// practice select
+	rows, err := db.Query("select id, name from users where id = $1", 2)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer rows.Close()
+
+	log.Println("query done")
+
+	for rows.Next() {
+		var (
+			id   int
+			name string
+		)
+		err := rows.Scan(&id, &name)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		log.Println("get data:", id, name)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	r := gin.Default()
 
