@@ -55,6 +55,25 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	// practice insert
+	stmt, err := db.Prepare("insert into users(name) values($1)")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	res, err := stmt.Exec("doraemon")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	// lastId, err := res.LastInsertId()
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	rowCnt, err := res.RowsAffected()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("ID = <not supported>, affected = %d\n", rowCnt)
+
 	r := gin.Default()
 
 	r.POST(fmt.Sprintf("%s/signup_request", apiPathPrefix), func(c *gin.Context) {})
