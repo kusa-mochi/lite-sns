@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"lite-sns/m/src/cmd/app_server/api_server"
+	"lite-sns/m/src/cmd/app_server/interfaces"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -20,7 +22,6 @@ func main() {
 	)
 
 	db, err := sql.Open("postgres", fmt.Sprintf("host=lite-sns-db port=%v user=user password=postgres dbname=lite_sns_db sslmode=disable", *dbPort))
-	// db, err := sql.Open("postgres", fmt.Sprintf("postgres://user:postgres@lite-sns-db:%v/lite_sns_db", *dbPort))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -100,16 +101,18 @@ func main() {
 	// })
 	// r.Run(":18080")
 
-	apiServerCommandCh := make(chan ApiServerCommandInterface)
-	apiServer := NewApiServer(
+	apiServerCommandCh := make(chan interfaces.ApiServerCommandInterface)
+	apiServer := api_server.NewApiServer(
 		apiPathPrefix,
 		*port,
 		apiServerCommandCh,
 	)
 	go apiServer.Run()
 
-	select {
-	case cmd := <-apiServerCommandCh:
-		cmd.Exec()
+	for {
+		select {
+		case cmd := <-apiServerCommandCh:
+			cmd.Exec()
+		}
 	}
 }

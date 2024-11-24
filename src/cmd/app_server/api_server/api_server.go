@@ -1,8 +1,9 @@
-package main
+package api_server
 
 import (
 	"fmt"
 	"lite-sns/m/src/cmd/app_server/commands"
+	"lite-sns/m/src/cmd/app_server/interfaces"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,13 +12,13 @@ type ApiServer struct {
 	r             *gin.Engine
 	apiPathPrefix string
 	port          int
-	commandCh     chan<- ApiServerCommandInterface
+	commandCh     chan<- interfaces.ApiServerCommandInterface
 }
 
 func NewApiServer(
 	apiPathPrefix string,
 	port int,
-	commandCh chan<- ApiServerCommandInterface,
+	commandCh chan<- interfaces.ApiServerCommandInterface,
 ) *ApiServer {
 	s := &ApiServer{
 		r:             gin.Default(),

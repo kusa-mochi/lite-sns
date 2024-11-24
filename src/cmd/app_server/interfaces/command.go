@@ -1,4 +1,4 @@
-package main
+package interfaces
 
 type ApiServerCommandInterface interface {
 	Exec()
