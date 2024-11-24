@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gin-gonic/gin"
-
 	_ "github.com/lib/pq"
 )
 
@@ -74,14 +72,6 @@ func main() {
 	}
 	log.Printf("ID = <not supported>, affected = %d\n", rowCnt)
 
-	r := gin.Default()
-
-	r.POST(fmt.Sprintf("%s/signup_request", apiPathPrefix), func(c *gin.Context) {})
-	r.POST(fmt.Sprintf("%s/signup", apiPathPrefix), func(c *gin.Context) {})
-	r.GET(fmt.Sprintf("%s/mail_addr_auth", apiPathPrefix), func(c *gin.Context) {})
-	r.POST(fmt.Sprintf("%s/signin", apiPathPrefix), func(c *gin.Context) {})
-
-	r.Run(fmt.Sprintf(":%d", *port))
 	// log.Println("app server started")
 	// r := gin.Default()
 	// r.GET("/ping", func(c *gin.Context) {
@@ -109,4 +99,17 @@ func main() {
 	// 	})
 	// })
 	// r.Run(":18080")
+
+	apiServerCommandCh := make(chan ApiServerCommandInterface)
+	apiServer := NewApiServer(
+		apiPathPrefix,
+		*port,
+		apiServerCommandCh,
+	)
+	go apiServer.Run()
+
+	select {
+	case cmd := <-apiServerCommandCh:
+		cmd.Exec()
+	}
 }
