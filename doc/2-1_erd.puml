@@ -1,0 +1,88 @@
+@startuml erd
+
+entity user as "ユーザー" {
+    + id [PK]
+    --
+    name [ユーザー名]
+    email_address [メールアドレス]
+    password_hash [パスワードハッシュ]
+}
+
+entity follow as "フォロー" {
+    + id [PK]
+    --
+}
+
+entity follower as "フォロワー" {
+    + id [PK]
+    --
+}
+
+entity block as "ブロックユーザー" {
+    + id [PK]
+    --
+}
+
+entity access_token as "アクセストークン" {
+    + id [PK]
+    --
+}
+
+entity signup_access_token as "サインアップ用\nアクセストークン" {
+    + id [PK]
+    --
+    secret_key [秘密鍵]
+}
+
+entity post as "投稿" {
+    + id [PK]
+    --
+    text [文章]
+    created at [初回投稿日時]
+    updated at [最終更新日時]
+    good_count [いいねの数]
+    empathy_count [共感の数]
+}
+
+entity comment as "投稿コメント" {
+    + id [PK]
+    --
+    text [文章]
+    created at [初回投稿日時]
+    updated at [最終更新日時]
+    good_count [いいねの数]
+    empathy_count [共感の数]
+}
+
+entity good as "いいね" {
+    + id [PK]
+    --
+}
+
+entity empathy as "共感" {
+    + id [PK]
+    --
+}
+
+entity icon as "アカウント用アイコン" {
+    + id [PK]
+    --
+    color [背景色]
+}
+
+user ||--o{ post
+user ||--|| icon
+user ||--o{ follow
+user ||--o{ follower
+user ||--o{ block
+user ||--o{ good
+user ||--o{ empathy
+
+post ||--o{ comment
+post ||--o{ good
+post ||--o{ empathy
+
+comment ||--o{ good
+comment ||--o{ empathy
+
+@enduml
