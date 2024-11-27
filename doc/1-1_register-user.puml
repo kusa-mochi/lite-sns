@@ -13,8 +13,9 @@ frontend -> backend : サインアップ画面表示　リクエスト
 group アクセストークン発行
     backend -> backend : 秘密鍵　生成
     backend -> backend : アクセストークン　発行
-    backend -> DB : アクセストークンリストに追加\n  アクセストークン\n  秘密鍵
-    DB -> DB : 秘密鍵　追加
+    note left : サインアップ用のアクセストークン\nなので有効期間短め
+    backend -> DB : サインアップ用アクセストークンリストに追加\n  アクセストークン\n  秘密鍵
+    DB -> DB : 追加\n  アクセストークン\n  秘密鍵
     DB --> backend : 登録成功／失敗
 end
 backend --> frontend : アクセストークン
