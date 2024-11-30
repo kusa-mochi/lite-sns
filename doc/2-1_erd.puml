@@ -1,11 +1,14 @@
 @startuml erd
 
+left to right direction
+
 entity user as "ユーザー" {
     + id [PK]
     --
     name [ユーザー名]
     email_address [メールアドレス]
     password_hash [パスワードハッシュ]
+    access_token [アクセストークンの秘密鍵]
 }
 
 entity follow as "フォロー" {
@@ -23,7 +26,7 @@ entity block as "ブロックユーザー" {
     --
 }
 
-entity access_token as "アクセストークン" {
+entity mute as "ミュートユーザー" {
     + id [PK]
     --
 }
@@ -31,6 +34,7 @@ entity access_token as "アクセストークン" {
 entity signup_access_token as "サインアップ用\nアクセストークン" {
     + id [PK]
     --
+    access_token [アクセストークン]
     secret_key [秘密鍵]
 }
 
@@ -40,8 +44,6 @@ entity post as "投稿" {
     text [文章]
     created at [初回投稿日時]
     updated at [最終更新日時]
-    good_count [いいねの数]
-    empathy_count [共感の数]
 }
 
 entity comment as "投稿コメント" {
@@ -50,18 +52,24 @@ entity comment as "投稿コメント" {
     text [文章]
     created at [初回投稿日時]
     updated at [最終更新日時]
-    good_count [いいねの数]
-    empathy_count [共感の数]
 }
 
 entity good as "いいね" {
     + id [PK]
     --
+    datetime [日時]
 }
 
 entity empathy as "共感" {
     + id [PK]
     --
+    datetime [日時]
+}
+
+entity collect as "お気に入り" {
+    + id [PK]
+    --
+    datetime [日時]
 }
 
 entity icon as "アカウント用アイコン" {
@@ -75,14 +83,18 @@ user ||--|| icon
 user ||--o{ follow
 user ||--o{ follower
 user ||--o{ block
+user ||--o{ mute
 user ||--o{ good
 user ||--o{ empathy
+user ||--o{ collect
 
 post ||--o{ comment
 post ||--o{ good
 post ||--o{ empathy
+post ||--o{ collect
 
 comment ||--o{ good
 comment ||--o{ empathy
+comment ||--o{ collect
 
 @enduml
