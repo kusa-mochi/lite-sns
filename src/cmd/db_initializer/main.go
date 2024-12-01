@@ -72,9 +72,7 @@ func CreateTable(db *sql.DB, tableAttr *TableAttr) {
 		case ColType_Boolean:
 			query += "boolean"
 		case ColType_CharacterVarying:
-			query += "varchar("
-			query += fmt.Sprintf("%v", col.MaxLength)
-			query += ")"
+			query += fmt.Sprintf("varchar(%v)", col.MaxLength)
 		case ColType_Integer:
 			query += "integer"
 		case ColType_Interval:
