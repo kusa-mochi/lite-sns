@@ -9,6 +9,8 @@ entity user as "ユーザー" {
     email_address [メールアドレス]
     password_hash [パスワードハッシュ]
     access_token [アクセストークンの秘密鍵]
+    icon_type [アイコン種別]
+    icon_background_color [アイコンの背景色]
 }
 
 entity follow as "フォロー" {
@@ -79,7 +81,6 @@ entity icon as "アカウント用アイコン" {
 }
 
 user ||--o{ post
-user ||--|| icon
 user ||--o{ follow
 user ||--o{ follower
 user ||--o{ block
