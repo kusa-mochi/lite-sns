@@ -60,9 +60,12 @@ func CreateDatabase(db *sql.DB, dbName string) {
 }
 
 func CreateTable(db *sql.DB, tableAttr *TableAttr) {
+	// テーブルを作成するクエリ。
+	// ここではテーブルが既に存在するケースを想定せず、存在する場合はエラー終了して欲しいため、
+	// あえて if not exists 指定はしない。
 	query := "create table "
 	query += tableAttr.Name + " "
-	query += "("
+	query += "(id serial primary key, "
 	for idx, col := range tableAttr.Cols {
 		query += col.Name + " "
 		switch col.Type {
