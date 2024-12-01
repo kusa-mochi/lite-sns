@@ -21,7 +21,7 @@ const (
 )
 
 const (
-	queryLogPrefix string = "*** query ***"
+	queryLogPrefix string = "[query]"
 )
 
 // id 以外の列定義に用いるパラメータを格納するための構造体
