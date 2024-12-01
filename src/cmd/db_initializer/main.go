@@ -15,9 +15,34 @@ type ColType int
 const (
 	ColType_Boolean = iota
 	ColType_CharacterVarying
+	ColType_Hash256
 	ColType_Integer
 	ColType_Interval
 	ColType_TimestampWithTimezone
+)
+
+// ユーザーアカウントに設定するアイコンの種別
+// 列挙型のように定義しているものの、整数値ではなく文字列として定義しているのは、
+// 後から種別の追加等の必要が生じた場合に値が変更されアイコンとの対応が
+// おかしくなってしまう事態を回避するため。
+type IconType string
+
+const (
+	IconType_Default = IconType("IconType_Default")
+	IconType_Male0   = IconType("IconType_Male0")
+	IconType_Male1   = IconType("IconType_Male1")
+	IconType_Male2   = IconType("IconType_Male2")
+	IconType_Female0 = IconType("IconType_Female0")
+	IconType_Female1 = IconType("IconType_Female1")
+	IconType_Female2 = IconType("IconType_Female2")
+)
+
+// いいね、共感、お気に入りの対象
+type ActionTarget int
+
+const (
+	ActionTarget_Post = iota
+	ActionTarget_Comment
 )
 
 const (
@@ -73,6 +98,8 @@ func CreateTable(db *sql.DB, tableAttr *TableAttr) {
 			query += "boolean"
 		case ColType_CharacterVarying:
 			query += fmt.Sprintf("varchar(%v)", col.MaxLength)
+		case ColType_Hash256:
+			query += "varchar(64)" // 16進数の文字列形式のハッシュ値を格納する。
 		case ColType_Integer:
 			query += "integer"
 		case ColType_Interval:
@@ -105,6 +132,10 @@ func CreateTable(db *sql.DB, tableAttr *TableAttr) {
 	}
 }
 
+func AddTestRecords() {
+	// TODO
+}
+
 func main() {
 	var (
 		dbPort = flag.Int("db_port", 5432, "port number of the db server")
@@ -122,6 +153,20 @@ func main() {
 							IsAutoIncrementable: false,
 						},
 						{
+							Name:                "icon_type",
+							Type:                ColType_CharacterVarying,
+							MaxLength:           128,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "icon_background_color",
+							Type:                ColType_CharacterVarying,
+							MaxLength:           6,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
 							Name:                "email_address",
 							Type:                ColType_CharacterVarying,
 							MaxLength:           254,
@@ -130,15 +175,15 @@ func main() {
 						},
 						{
 							Name:                "password_hash",
-							Type:                ColType_CharacterVarying,
-							MaxLength:           64, // RS256 ハッシュを16進数の文字列で表現したもの。
+							Type:                ColType_Hash256,
+							MaxLength:           0,
 							IsNullable:          false,
 							IsAutoIncrementable: false,
 						},
 						{
 							Name:                "access_token_secret_key",
-							Type:                ColType_CharacterVarying,
-							MaxLength:           64, // RS256 ハッシュを16進数の文字列で表現したもの。
+							Type:                ColType_Hash256,
+							MaxLength:           0,
 							IsNullable:          false,
 							IsAutoIncrementable: false,
 						},
@@ -147,6 +192,13 @@ func main() {
 				{
 					Name: "post",
 					Cols: []ColAttr{
+						{
+							Name:                "user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
 						{
 							Name:                "text",
 							Type:                ColType_CharacterVarying,
@@ -163,6 +215,263 @@ func main() {
 						},
 						{
 							Name:                "updated_at",
+							Type:                ColType_TimestampWithTimezone,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+					},
+				},
+				{
+					Name: "comment",
+					Cols: []ColAttr{
+						{
+							Name:                "post_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "text",
+							Type:                ColType_CharacterVarying,
+							MaxLength:           1000,
+							IsNullable:          true,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "created_at",
+							Type:                ColType_TimestampWithTimezone,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "updated_at",
+							Type:                ColType_TimestampWithTimezone,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+					},
+				},
+				{
+					Name: "good",
+					Cols: []ColAttr{
+						{
+							Name:                "user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "action_target",
+							Type:                ColType_Integer, // 0: post, 1: comment
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "target_id", // postまたはcommentのid。どちらのidなのかはaction_targetで判別する。
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "target_user_id", // いいねされたpostまたはcommentの作者のuser_id
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "datetime",
+							Type:                ColType_TimestampWithTimezone,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+					},
+				},
+				{
+					Name: "empathy",
+					Cols: []ColAttr{
+						{
+							Name:                "user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "action_target",
+							Type:                ColType_Integer, // 0: post, 1: comment
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "target_id", // postまたはcommentのid。どちらのidなのかはaction_targetで判別する。
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "target_user_id", // 共感されたpostまたはcommentの作者のuser_id
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "datetime",
+							Type:                ColType_TimestampWithTimezone,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+					},
+				},
+				{
+					Name: "favorite",
+					Cols: []ColAttr{
+						{
+							Name:                "user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "action_target",
+							Type:                ColType_Integer, // 0: post, 1: comment
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "target_id", // postまたはcommentのid。どちらのidなのかはaction_targetで判別する。
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "target_user_id", // お気に入り登録されたpostまたはcommentの作者のuser_id
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "datetime",
+							Type:                ColType_TimestampWithTimezone,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+					},
+				},
+				{
+					Name: "follow",
+					Cols: []ColAttr{
+						{
+							Name:                "user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "target_user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "follow_at",
+							Type:                ColType_TimestampWithTimezone,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+					},
+				},
+				{
+					Name: "block",
+					Cols: []ColAttr{
+						{
+							Name:                "user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "target_user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "block_at",
+							Type:                ColType_TimestampWithTimezone,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+					},
+				},
+				{
+					Name: "mute",
+					Cols: []ColAttr{
+						{
+							Name:                "user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "target_user_id",
+							Type:                ColType_Integer,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "mute_at",
+							Type:                ColType_TimestampWithTimezone,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+					},
+				},
+				{
+					Name: "signup_access_token",
+					Cols: []ColAttr{
+						{
+							Name:                "access_token",
+							Type:                ColType_Hash256,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "secret_key",
+							Type:                ColType_Hash256,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "created_at",
 							Type:                ColType_TimestampWithTimezone,
 							MaxLength:           0,
 							IsNullable:          false,
@@ -201,4 +510,7 @@ func main() {
 	for _, tableAttr := range dbAttr.Tables {
 		CreateTable(db, &tableAttr)
 	}
+
+	// デバッグ上必要なら、以下のコードでテスト用レコードを各テーブルに追加する。
+	AddTestRecords()
 }
