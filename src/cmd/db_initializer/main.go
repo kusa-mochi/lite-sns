@@ -132,8 +132,14 @@ func CreateTable(db *sql.DB, tableAttr *TableAttr) {
 	}
 }
 
-func AddTestRecords() {
+func AddTestRecords(db *sql.DB) {
 	// TODO
+	query := ""
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer stmt.Close()
 }
 
 func main() {
@@ -511,6 +517,6 @@ func main() {
 		CreateTable(db, &tableAttr)
 	}
 
-	// デバッグ上必要なら、以下のコードでテスト用レコードを各テーブルに追加する。
-	AddTestRecords()
+	// // デバッグ上必要なら、以下のコードでテスト用レコードを各テーブルに追加する。
+	// AddTestRecords()
 }
