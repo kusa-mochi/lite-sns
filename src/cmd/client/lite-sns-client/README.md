@@ -48,3 +48,23 @@ export default tseslint.config({
   },
 })
 ```
+
+## debugging
+
+```
+npm run dev
+```
+
+## static build
+
+```
+npm run build
+```
+
+Then the outputs are generated in dist/ dir.
+
+## run the static build output
+
+```
+npm run preview
+```
