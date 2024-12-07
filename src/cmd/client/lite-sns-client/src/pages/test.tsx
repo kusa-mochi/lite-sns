@@ -1,8 +1,11 @@
 import { css } from "@emotion/css"
+import useTheme from "../themes/theme"
 
 export default function Test() {
+    const theme = useTheme("light")
     const testStyle = css`
-        color: blue;
+        color: ${theme?.palette.primary.fontColor};
+        background-color: ${theme?.palette.primary.main};
     `
     return (
         <>
