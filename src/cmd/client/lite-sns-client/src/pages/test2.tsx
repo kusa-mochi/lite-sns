@@ -1,9 +1,9 @@
-export default function Test() {
+export default function Test2() {
     return (
         <>
             <div>This is a test component.</div>
             <div>
-                <p>Go to <a href="/test2">Test2 Page</a></p>
+                <p>Go to <a href="/">Home Page</a></p>
             </div>
         </>
     )

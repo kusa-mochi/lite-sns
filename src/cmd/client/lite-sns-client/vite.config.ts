@@ -6,18 +6,18 @@ import Pages from "vite-plugin-pages"
 export default defineConfig({
   plugins: [
     react(),
-    Pages(),
-    // Pages({
-    //   dirs: [
-    //     // basic
-    //     { dir: 'src/pages', baseRoute: '' },
-    //     // admin pages
-    //     { dir: 'src/admin/pages', baseRoute: 'admin' },
-    //   ],
-    // }),
+    // Pages(),
+    Pages({
+      dirs: [
+        // basic
+        { dir: 'src/pages', baseRoute: '' },
+        // admin pages
+        { dir: 'src/admin/pages', baseRoute: 'admin' },
+      ],
+    }),
   ],
   server: {
     host: '0.0.0.0',
     port: 8080,
-  }
+  },
 })
