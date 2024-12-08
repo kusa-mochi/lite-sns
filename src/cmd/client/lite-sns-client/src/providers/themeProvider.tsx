@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 
 type PaletteTheme = {
     main: string
@@ -57,72 +57,6 @@ export function useTheme(): Theme {
     if (!theme) throw new Error("wrap this component by ThemeProvider")
     
     return theme
-    // switch (th) {
-    //     case "light":
-    //         return {
-    //             palette: {
-    //                 primary: {
-    //                     main: '#59d273',
-    //                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
-    //                 },
-    //                 secondary: {
-    //                     main: '##b3b3b3',
-    //                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
-    //                 },
-    //             },
-    //             typography: {
-    //                 fontFamily: 'Arial, sans-serif',
-    //                 fontSize: 14,
-    //                 fontWeightLight: 300,
-    //                 fontWeightRegular: 400,
-    //                 fontWeightMedium: 700,
-    //                 h1: { fontSize: 60 },
-    //                 h2: { fontSize: 48 },
-    //                 h3: { fontSize: 42 },
-    //                 h4: { fontSize: 36 },
-    //                 h5: { fontSize: 20 },
-    //                 h6: { fontSize: 18 },
-    //                 subTitle1: { fontSize: 18 },
-    //                 subTitle2: { fontSize: 18 },
-    //                 body1: { fontSize: 16 },
-    //                 body2: { fontSize: 16 },
-    //                 button: { textTransform: 'none' },
-    //             },
-    //         }
-    //     case "dark":
-    //         return {
-    //             palette: {
-    //                 primary: {
-    //                     main: '#59d273',
-    //                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
-    //                 },
-    //                 secondary: {
-    //                     main: '##b3b3b3',
-    //                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
-    //                 },
-    //             },
-    //             typography: {
-    //                 fontFamily: 'Arial, sans-serif',
-    //                 fontSize: 14,
-    //                 fontWeightLight: 300,
-    //                 fontWeightRegular: 400,
-    //                 fontWeightMedium: 700,
-    //                 h1: { fontSize: 60 },
-    //                 h2: { fontSize: 48 },
-    //                 h3: { fontSize: 42 },
-    //                 h4: { fontSize: 36 },
-    //                 h5: { fontSize: 20 },
-    //                 h6: { fontSize: 18 },
-    //                 subTitle1: { fontSize: 18 },
-    //                 subTitle2: { fontSize: 18 },
-    //                 body1: { fontSize: 16 },
-    //                 body2: { fontSize: 16 },
-    //                 button: { textTransform: 'none' },
-    //             },
-    //         }
-    //     default:
-    //         console.error("invalid theme")
-    // }
 }
 
 type ThemeProviderProps = {
@@ -210,8 +144,6 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
     }, [])
 
     if (!theme) return <div>Loading...</div>
-
-    console.log("theme provider initialized")
 
     return <ThemeContext.Provider value={theme}>{props.children}</ThemeContext.Provider>
 }
