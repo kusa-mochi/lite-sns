@@ -12,45 +12,41 @@ type Props = {
 export default function Button (props: Props) {
     const theme = useTheme()
     const { children, primary, secondary, onClick } = props
-    const [bgColor, setBgColor] = useState("")
-    const [fontColor, setFontColor] = useState("")
+    const [bgColor, setBgColor] = useState(theme.palette.secondary.main)
+    const [fColor, setFColor] = useState(theme.palette.secondary.fontColor)
+    const [fSize, setFSize] = useState(1)
 
     useEffect(() => {
-        // defult colors
-        setBgColor(theme.palette.secondary.main)
-        setFontColor(theme.palette.secondary.fontColor)
-
         if (secondary) {
             setBgColor(theme.palette.secondary.main)
-            setFontColor(theme.palette.secondary.fontColor)
+            setFColor(theme.palette.secondary.fontColor)
         }
         if (primary) {
             setBgColor(theme.palette.primary.main)
-            setFontColor(theme.palette.primary.fontColor)
+            setFColor(theme.palette.primary.fontColor)
         }
+        setFSize(theme.typography.fontSize)
     }, [])
 
     useEffect(() => {
-        // defult colors
-        setBgColor(theme.palette.secondary.main)
-        setFontColor(theme.palette.secondary.fontColor)
-        
         if (secondary) {
             setBgColor(theme.palette.secondary.main)
-            setFontColor(theme.palette.secondary.fontColor)
+            setFColor(theme.palette.secondary.fontColor)
         }
         if (primary) {
             setBgColor(theme.palette.primary.main)
-            setFontColor(theme.palette.primary.fontColor)
+            setFColor(theme.palette.primary.fontColor)
         }
+        setFSize(theme.typography.fontSize)
     }, [primary, secondary])
 
     const buttonStyle = css`
         background-color: ${bgColor};
-        color: ${fontColor};
+        color: ${fColor};
         box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+        font-size: ${fSize}rem;
+        padding: ${fSize/3}rem;
     `
-    console.log(`bg:${bgColor}, color:${fontColor}`)
 
     return (
         <div
