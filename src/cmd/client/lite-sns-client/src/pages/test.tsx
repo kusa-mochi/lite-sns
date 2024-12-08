@@ -1,5 +1,4 @@
 import { css } from "@emotion/css"
-import useTheme from "../themes/theme"
 
 export default function Test() {
     const theme = useTheme("light")
