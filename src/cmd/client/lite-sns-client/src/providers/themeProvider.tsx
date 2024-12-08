@@ -69,17 +69,17 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
         light: {
             palette: {
                 primary: {
-                    main: '#59d273',
+                    main: '#bbf7d0',
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
                 },
                 secondary: {
-                    main: '#b3b3b3',
+                    main: '#dde7ee',
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
                 },
             },
             typography: {
                 fontFamily: 'Arial, sans-serif',
-                fontSize: 14,
+                fontSize: 1,    // "rem" size
                 fontWeightLight: 300,
                 fontWeightRegular: 400,
                 fontWeightMedium: 700,
@@ -100,17 +100,17 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
         dark: { // TODO: Make palette for the dark theme. Now it is same to the light theme.
             palette: {
                 primary: {
-                    main: '#59d273',
+                    main: '#bbf7d0',
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
                 },
                 secondary: {
-                    main: '##b3b3b3',
+                    main: '#dde7ee',
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
                 },
             },
             typography: {
                 fontFamily: 'Arial, sans-serif',
-                fontSize: 14,
+                fontSize: 1,    // "rem" size
                 fontWeightLight: 300,
                 fontWeightRegular: 400,
                 fontWeightMedium: 700,
