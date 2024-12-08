@@ -3,8 +3,12 @@ services:
     image: whoatemyapplepie/lite-sns-devenvs:1.0.0
     build:
       context: .
+      args:
+        - WEB_SERVER_PORT=${WEB_SERVER_PORT}
+        - APP_SERVER_PORT=${APP_SERVER_PORT}
     container_name: lite-sns-devenvs
     ports:
+      - ${WEB_SERVER_PORT}:${WEB_SERVER_PORT}
       - ${APP_SERVER_PORT}:${APP_SERVER_PORT}
     volumes:
       - ../:/project
