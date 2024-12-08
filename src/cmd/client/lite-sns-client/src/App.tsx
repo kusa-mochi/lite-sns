@@ -1,10 +1,7 @@
-import { Suspense, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Suspense } from 'react'
 import './App.css'
 import { useRoutes } from 'react-router'
 import routes from '~react-pages'
-import { createRoot } from 'react-dom/client'
 
 function App() {
   // const [count, setCount] = useState(0)
