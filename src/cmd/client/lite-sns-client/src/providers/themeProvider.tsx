@@ -213,7 +213,5 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
 
     console.log("theme provider initialized")
 
-    return (
-        <ThemeContext.Provider value={theme}></ThemeContext.Provider>
-    )
+    return <ThemeContext.Provider value={theme}>{props.children}</ThemeContext.Provider>
 }
