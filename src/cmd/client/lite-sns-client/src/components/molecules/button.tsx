@@ -4,6 +4,7 @@ import { useTheme } from "../../providers/themeProvider"
 
 type Props = {
     children?: ReactNode
+    active?: boolean
     enabled?: boolean
     focused?: boolean
     primary?: boolean
@@ -13,13 +14,15 @@ type Props = {
 
 export default function Button (props: Props) {
     const theme = useTheme()
-    const { children, enabled, focused, primary, secondary, onClick } = props
+    const { children, active, enabled, focused, primary, secondary, onClick } = props
+    const [activeState, setActiveState] = useState(false)
     const [bgColor, setBgColor] = useState(theme.palette.secondary.main)
     const [fColor, setFColor] = useState(theme.palette.secondary.fontColor)
     const [outlineColor, setOutlineColor] = useState(theme.palette.secondary.outlineColor)
     const [fSize, setFSize] = useState(1)
 
     useEffect(() => {
+        setActiveState(active === undefined ? false : active)
         if (secondary) {
             setBgColor(theme.palette.secondary.main)
             setFColor(theme.palette.secondary.fontColor)
@@ -34,6 +37,7 @@ export default function Button (props: Props) {
     }, [])
 
     useEffect(() => {
+        setActiveState(active === undefined ? false : active)
         if (secondary) {
             setBgColor(theme.palette.secondary.main)
             setFColor(theme.palette.secondary.fontColor)
@@ -45,7 +49,7 @@ export default function Button (props: Props) {
             setOutlineColor(theme.palette.primary.outlineColor)
         }
         setFSize(theme.typography.fontSize)
-    }, [primary, secondary])
+    }, [active, primary, secondary])
 
     const buttonStyle = css`
         background-color: ${bgColor};
@@ -62,6 +66,8 @@ export default function Button (props: Props) {
         &:hover {
             filter: ${enabled === false ? "none" : "brightness(90%)"};
         }
+        
+        filter: ${activeState && enabled !== false ? "brightness(80%)" : "none"};
     `
 
     return (
