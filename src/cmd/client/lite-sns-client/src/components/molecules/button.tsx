@@ -1,5 +1,5 @@
 import { css } from "@emotion/css"
-import { ReactNode, useEffect, useState } from "react"
+import { MouseEvent, ReactNode, useEffect, useState } from "react"
 import { useTheme } from "../../providers/themeProvider"
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
     focused?: boolean
     primary?: boolean
     secondary?: boolean
-    onClick?: () => void
+    onClick?: (e: MouseEvent) => void
 }
 
 export default function Button (props: Props) {
@@ -73,7 +73,7 @@ export default function Button (props: Props) {
     return (
         <>
             <div
-                onClick={onClick ? () => onClick() : () => {}}
+                onClick={onClick ? onClick : () => {}}
                 className={buttonStyle}
             >
                 {children}
