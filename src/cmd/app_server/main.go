@@ -14,7 +14,7 @@ import (
 func main() {
 	var (
 		// ip   = flag.String("ip", "localhost", "IP address of the app server")
-		port   = flag.Int("port", 10081, "port number of the app server")
+		port   = flag.Int("port", 12381, "port number of the app server")
 		dbPort = flag.Int("db_port", 5432, "port number of the db server")
 	)
 	const (
