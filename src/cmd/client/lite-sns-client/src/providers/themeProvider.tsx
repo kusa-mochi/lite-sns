@@ -3,6 +3,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 type PaletteTheme = {
     main: string
     fontColor: string
+    outlineColor: string
 }
 
 type HeaderTheme = {
@@ -71,10 +72,12 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
                 primary: {
                     main: '#bbf7d0',
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
+                    outlineColor: '#4abd9a',
                 },
                 secondary: {
                     main: '#dde7ee',
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
+                    outlineColor: '#4abd9a',
                 },
             },
             typography: {
@@ -102,10 +105,12 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
                 primary: {
                     main: '#bbf7d0',
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
+                    outlineColor: '#4abd9a',
                 },
                 secondary: {
                     main: '#dde7ee',
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
+                    outlineColor: '#4abd9a',
                 },
             },
             typography: {

@@ -4,6 +4,7 @@ import { useTheme } from "../../providers/themeProvider"
 
 type Props = {
     children?: ReactNode
+    focused?: boolean
     enabled?: boolean
     primary?: boolean
     secondary?: boolean
@@ -12,19 +13,22 @@ type Props = {
 
 export default function Button (props: Props) {
     const theme = useTheme()
-    const { children, enabled, primary, secondary, onClick } = props
+    const { children, focused, enabled, primary, secondary, onClick } = props
     const [bgColor, setBgColor] = useState(theme.palette.secondary.main)
     const [fColor, setFColor] = useState(theme.palette.secondary.fontColor)
+    const [outlineColor, setOutlineColor] = useState(theme.palette.secondary.outlineColor)
     const [fSize, setFSize] = useState(1)
 
     useEffect(() => {
         if (secondary) {
             setBgColor(theme.palette.secondary.main)
             setFColor(theme.palette.secondary.fontColor)
+            setOutlineColor(theme.palette.secondary.outlineColor)
         }
         if (primary) {
             setBgColor(theme.palette.primary.main)
             setFColor(theme.palette.primary.fontColor)
+            setOutlineColor(theme.palette.primary.outlineColor)
         }
         setFSize(theme.typography.fontSize)
     }, [])
@@ -33,10 +37,12 @@ export default function Button (props: Props) {
         if (secondary) {
             setBgColor(theme.palette.secondary.main)
             setFColor(theme.palette.secondary.fontColor)
+            setOutlineColor(theme.palette.secondary.outlineColor)
         }
         if (primary) {
             setBgColor(theme.palette.primary.main)
             setFColor(theme.palette.primary.fontColor)
+            setOutlineColor(theme.palette.primary.outlineColor)
         }
         setFSize(theme.typography.fontSize)
     }, [primary, secondary])
@@ -49,6 +55,9 @@ export default function Button (props: Props) {
         padding: ${fSize/3}rem;
         cursor: ${enabled === false ? "default" : "pointer"};
         opacity: ${enabled === undefined || enabled === true ? "1" : "0.4"};
+        outline-color: ${outlineColor};
+        outline-style: solid;
+        outline-width: ${focused === true ? "midium" : "0"};
 
         &:hover {
             filter: ${enabled === false ? "none" : "brightness(90%)"};

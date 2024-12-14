@@ -10,6 +10,7 @@ export default function Test() {
                 <Button>Sign up</Button>
                 <Button>Sign in</Button>
                 <Button enabled={false}>Disabled button</Button>
+                <Button focused>Focused button</Button>
                 <p>Go to <a href="/test2">Test2 Page</a></p>
             </div>
         </>
