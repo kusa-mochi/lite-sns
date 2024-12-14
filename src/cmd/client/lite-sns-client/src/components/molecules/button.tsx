@@ -4,8 +4,8 @@ import { useTheme } from "../../providers/themeProvider"
 
 type Props = {
     children?: ReactNode
-    focused?: boolean
     enabled?: boolean
+    focused?: boolean
     primary?: boolean
     secondary?: boolean
     onClick?: () => void
@@ -13,7 +13,7 @@ type Props = {
 
 export default function Button (props: Props) {
     const theme = useTheme()
-    const { children, focused, enabled, primary, secondary, onClick } = props
+    const { children, enabled, focused, primary, secondary, onClick } = props
     const [bgColor, setBgColor] = useState(theme.palette.secondary.main)
     const [fColor, setFColor] = useState(theme.palette.secondary.fontColor)
     const [outlineColor, setOutlineColor] = useState(theme.palette.secondary.outlineColor)
