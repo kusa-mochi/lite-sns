@@ -13,8 +13,6 @@ export default function Test() {
                 This is a test component.
             </Button>
             <div>
-                <Button>Sign up</Button>
-                <Button>Sign in</Button>
                 <Button enabled={false}>Disabled button</Button>
                 <Button focused>Focused button</Button>
                 <Button active>Active button</Button>
