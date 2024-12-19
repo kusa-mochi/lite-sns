@@ -29,50 +29,52 @@ func main() {
 
 	log.Println("DB connected")
 
-	// practice select
-	rows, err := db.Query("select id, name from users where id = $1", 2)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer rows.Close()
-
-	log.Println("query done")
-
-	for rows.Next() {
-		var (
-			id   int
-			name string
-		)
-		err := rows.Scan(&id, &name)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		log.Println("get data:", id, name)
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	// practice insert
-	stmt, err := db.Prepare("insert into users(name) values($1)")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	res, err := stmt.Exec("doraemon")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	// lastId, err := res.LastInsertId()
+	// // practice select
+	// rows, err := db.Query("select id, name from users where id = $1", 2)
 	// if err != nil {
 	// 	log.Fatalln(err)
 	// }
-	rowCnt, err := res.RowsAffected()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Printf("ID = <not supported>, affected = %d\n", rowCnt)
+	// defer rows.Close()
 
+	// log.Println("query done")
+
+	// for rows.Next() {
+	// 	var (
+	// 		id   int
+	// 		name string
+	// 	)
+	// 	err := rows.Scan(&id, &name)
+	// 	if err != nil {
+	// 		log.Fatalln(err)
+	// 	}
+	// 	log.Println("get data:", id, name)
+	// }
+	// err = rows.Err()
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+
+	// // practice insert
+	// stmt, err := db.Prepare("insert into users(name) values($1)")
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// res, err := stmt.Exec("doraemon")
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// // lastId, err := res.LastInsertId()
+	// // if err != nil {
+	// // 	log.Fatalln(err)
+	// // }
+	// rowCnt, err := res.RowsAffected()
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// log.Printf("ID = <not supported>, affected = %d\n", rowCnt)
+
+
+	
 	// log.Println("app server started")
 	// r := gin.Default()
 	// r.GET("/ping", func(c *gin.Context) {
