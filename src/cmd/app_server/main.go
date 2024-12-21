@@ -21,6 +21,7 @@ func main() {
 		apiPathPrefix string = "/lite-sns/api/v1"
 	)
 
+	// TODO: need more secure
 	db, err := sql.Open("postgres", fmt.Sprintf("host=lite-sns-db port=%v user=user password=postgres dbname=lite_sns_db sslmode=disable", *dbPort))
 	if err != nil {
 		log.Fatalln(err)
@@ -73,8 +74,6 @@ func main() {
 	// }
 	// log.Printf("ID = <not supported>, affected = %d\n", rowCnt)
 
-
-	
 	// log.Println("app server started")
 	// r := gin.Default()
 	// r.GET("/ping", func(c *gin.Context) {
