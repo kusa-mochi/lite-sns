@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"lite-sns/m/src/cmd/app_server/commands"
 	"lite-sns/m/src/cmd/app_server/interfaces"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -55,8 +56,11 @@ func (s *ApiServer) SignupRequest(c *gin.Context) {
 
 // ユーザーアカウント仮登録処理
 func (s *ApiServer) Signup(c *gin.Context) {
+	log.Println("server signup start")
+	
 	resCh := make(chan string)
 	s.commandCh <- &commands.SignupCommand{
+		EmailAddr: c.PostForm("EmailAddr"),
 		ResCh: resCh,
 	}
 	result := <-resCh
