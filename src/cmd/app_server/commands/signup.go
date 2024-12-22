@@ -14,22 +14,14 @@ type SignupCommand struct {
 	ResCh     chan<- string
 }
 
-func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs) {
-	log.Println("email addr:", c.EmailAddr)
-
-	var (
-		toAddr string = c.EmailAddr
-		subj   string = "lite-sns email test"
-		body   string = "This is a test email from lite-sns site.\nThis is a second line :)"
-	)
-
+func (c *SignupCommand) sendAuthMail(configs *server_configs.SmtpConfig, toAddr string, subject string, body string) {
 	// Setup headers
-	from := mail.Address{Name: "", Address: configs.Smtp.Username}
+	from := mail.Address{Name: "", Address: configs.Username}
 	to := mail.Address{Name: "", Address: toAddr}
 	headers := make(map[string]string)
 	headers["From"] = from.String()
 	headers["To"] = to.String()
-	headers["Subject"] = subj
+	headers["Subject"] = subject
 
 	// Setup message
 	message := ""
@@ -39,23 +31,23 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs) {
 	message += "\r\n" + body
 
 	// Connect to the SMTP Server
-	auth := smtp.PlainAuth("", configs.Smtp.Username, configs.Smtp.Password, configs.Smtp.Hostname)
+	auth := smtp.PlainAuth("", configs.Username, configs.Password, configs.Hostname)
 
 	// TLS config
 	tlsconfig := &tls.Config{
 		InsecureSkipVerify: true,
-		ServerName:         configs.Smtp.Hostname,
+		ServerName:         configs.Hostname,
 	}
 
 	// Here is the key, you need to call tls.Dial instead of smtp.Dial
 	// for smtp servers running on 465 that require an ssl connection
 	// from the very beginning (no starttls)
-	conn, err := tls.Dial("tcp", fmt.Sprintf("%s:%v", configs.Smtp.Hostname, configs.Smtp.Port), tlsconfig)
+	conn, err := tls.Dial("tcp", fmt.Sprintf("%s:%v", configs.Hostname, configs.Port), tlsconfig)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	client, err := smtp.NewClient(conn, configs.Smtp.Hostname)
+	client, err := smtp.NewClient(conn, configs.Hostname)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -91,6 +83,26 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs) {
 	}
 
 	client.Quit()
+}
+
+func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs) {
+	log.Println("email addr:", c.EmailAddr)
+
+	var (
+		subj string = "lite-sns email test"
+		body string = "This is a test email from lite-sns site.\nThis is a second line :)"
+	)
+
+	// このサインアップ処理でのみ有効な秘密鍵を生成する。
+
+	// サインアップ用アクセストークンを発行する。
+
+	// DBに、サインアップ用アクセストークンと秘密鍵を登録する。
+
+	// 認証用メールの本文を生成する。
+
+	// 認証用メールを送信する。
+	c.sendAuthMail(&configs.Smtp, c.EmailAddr, subj, body)
 
 	c.ResCh <- "signup fin"
 }
