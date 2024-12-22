@@ -3,8 +3,8 @@ package commands
 import (
 	"crypto/tls"
 	"fmt"
+	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
-	"net"
 	"net/mail"
 	"net/smtp"
 )
@@ -14,14 +14,8 @@ type SignupCommand struct {
 	ResCh     chan<- string
 }
 
-func (c *SignupCommand) Exec() {
+func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs) {
 	log.Println("email addr:", c.EmailAddr)
-
-	const (
-		servername string = "<smtp_server_host>:<port>"
-		fromAddr   string = "<email_addr>"
-		password   string = "<password>"
-	)
 
 	var (
 		toAddr string = c.EmailAddr
@@ -30,7 +24,7 @@ func (c *SignupCommand) Exec() {
 	)
 
 	// Setup headers
-	from := mail.Address{Name: "", Address: fromAddr}
+	from := mail.Address{Name: "", Address: configs.Smtp.Username}
 	to := mail.Address{Name: "", Address: toAddr}
 	headers := make(map[string]string)
 	headers["From"] = from.String()
@@ -45,25 +39,23 @@ func (c *SignupCommand) Exec() {
 	message += "\r\n" + body
 
 	// Connect to the SMTP Server
-	host, _, _ := net.SplitHostPort(servername)
-
-	auth := smtp.PlainAuth("", fromAddr, password, host)
+	auth := smtp.PlainAuth("", configs.Smtp.Username, configs.Smtp.Password, configs.Smtp.Hostname)
 
 	// TLS config
 	tlsconfig := &tls.Config{
 		InsecureSkipVerify: true,
-		ServerName:         host,
+		ServerName:         configs.Smtp.Hostname,
 	}
 
 	// Here is the key, you need to call tls.Dial instead of smtp.Dial
 	// for smtp servers running on 465 that require an ssl connection
 	// from the very beginning (no starttls)
-	conn, err := tls.Dial("tcp", servername, tlsconfig)
+	conn, err := tls.Dial("tcp", fmt.Sprintf("%s:%v", configs.Smtp.Hostname, configs.Smtp.Port), tlsconfig)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	client, err := smtp.NewClient(conn, host)
+	client, err := smtp.NewClient(conn, configs.Smtp.Hostname)
 	if err != nil {
 		log.Panic(err)
 	}

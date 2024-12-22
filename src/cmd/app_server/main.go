@@ -2,27 +2,46 @@ package main
 
 import (
 	"database/sql"
-	"flag"
+	"encoding/json"
 	"fmt"
+	"io"
 	"lite-sns/m/src/cmd/app_server/api_server"
 	"lite-sns/m/src/cmd/app_server/interfaces"
+	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	var (
-		// ip   = flag.String("ip", "localhost", "IP address of the app server")
-		port   = flag.Int("port", 12381, "port number of the app server")
-		dbPort = flag.Int("db_port", 5432, "port number of the db server")
-	)
+	// read a config file
+	configFile, err := os.Open("conf/release/app_server.json")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	configBytes, err := io.ReadAll(configFile)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var serverConfigs server_configs.ServerConfigs
+	json.Unmarshal(configBytes, &serverConfigs)
+
 	const (
 		apiPathPrefix string = "/lite-sns/api/v1"
 	)
 
-	// TODO: need more secure
-	db, err := sql.Open("postgres", fmt.Sprintf("host=lite-sns-db port=%v user=user password=postgres dbname=lite_sns_db sslmode=disable", *dbPort))
+	db, err := sql.Open(
+		"postgres",
+		fmt.Sprintf(
+			"host=%s port=%v user=%s password=%s dbname=%s sslmode=disable",
+			serverConfigs.Db.Hostname,
+			serverConfigs.Db.Port,
+			serverConfigs.Db.Username,
+			serverConfigs.Db.Password,
+			serverConfigs.Db.Dbname,
+		),
+	)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -105,7 +124,7 @@ func main() {
 	apiServerCommandCh := make(chan interfaces.ApiServerCommandInterface)
 	apiServer := api_server.NewApiServer(
 		apiPathPrefix,
-		*port,
+		serverConfigs.App.Port,
 		apiServerCommandCh,
 	)
 	go apiServer.Run()
@@ -113,7 +132,7 @@ func main() {
 	for {
 		select {
 		case cmd := <-apiServerCommandCh:
-			cmd.Exec()
+			cmd.Exec(&serverConfigs)
 		}
 	}
 }
