@@ -1,4 +1,5 @@
 dist/
+src/cmd/app_server/conf/release/
 src/cmd/app_server/app_server
 src/cmd/auth_server/auth_server
 
