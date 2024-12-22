@@ -3,6 +3,7 @@ package commands
 import (
 	"crypto/tls"
 	"fmt"
+	"lite-sns/m/src/cmd/app_server/api_server_common"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
 	"net/mail"
@@ -94,6 +95,7 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs) {
 	)
 
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
+	secretKey := api_server_common.GenerateToken()
 
 	// サインアップ用アクセストークンを発行する。
 
