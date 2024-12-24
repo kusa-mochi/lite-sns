@@ -3,11 +3,13 @@ package commands
 import (
 	"crypto/tls"
 	"fmt"
-	"lite-sns/m/src/cmd/app_server/api_server_common"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
 	"net/mail"
 	"net/smtp"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type SignupCommand struct {
@@ -91,17 +93,31 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs) {
 
 	var (
 		subj string = "lite-sns email test"
-		body string = "This is a test email from lite-sns site.\nThis is a second line :)"
 	)
 
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
-	secretKey := api_server_common.GenerateToken()
+	// secretKey := api_server_common.GenerateToken()
+	const secretKey string = "secretkey"
 
 	// サインアップ用アクセストークンを発行する。
+	// アクセストークンには有効期限が設定されている。
+	const tokenLifetime time.Duration = 10 * time.Minute
+	token := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"exp": time.Now().Add(tokenLifetime).Unix(),
+		},
+	)
+	tokenString, err := token.SignedString([]byte(secretKey))
+	if err != nil {
+		c.ResCh <- "failed to generate a token"
+		return
+	}
 
-	// DBに、サインアップ用アクセストークンと秘密鍵を登録する。
+	// TODO: DBに、サインアップ用アクセストークンと秘密鍵を登録する。
 
 	// 認証用メールの本文を生成する。
+	body := fmt.Sprintf("access to the following link:\nhttp://localhost:12381/lite-sns/api/v1/mail_addr_auth?t=%s", tokenString)
 
 	// 認証用メールを送信する。
 	c.sendAuthMail(&configs.Smtp, c.EmailAddr, subj, body)
