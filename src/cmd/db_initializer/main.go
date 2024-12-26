@@ -18,6 +18,7 @@ const (
 	ColType_Hash256
 	ColType_Integer
 	ColType_Interval
+	ColType_JWT
 	ColType_TimestampWithTimezone
 )
 
@@ -99,18 +100,24 @@ func CreateTable(db *sql.DB, tableAttr *TableAttr) {
 		case ColType_CharacterVarying:
 			query += fmt.Sprintf("varchar(%v)", col.MaxLength)
 		case ColType_Hash256:
-			query += "varchar(64)" // 16進数の文字列形式のハッシュ値を格納する。
+			query += "varchar(64)" // ハッシュ値の16進数文字列
 		case ColType_Integer:
 			query += "integer"
 		case ColType_Interval:
 			query += "interval"
+		case ColType_JWT:
+			query += "varchar(256)"
 		case ColType_TimestampWithTimezone:
-			query += "timestamptz"
+			query += "bigint" // unix time (64bit符号付整数) の数値を格納する。
 		}
 
 		if col.IsNullable {
 			query += " null"
-		} else {
+		} else { // lastId, err := res.LastInsertId()
+			// if err != nil {
+			// 	log.Fatalln(err)
+			// }
+
 			query += " not null"
 		}
 
@@ -464,7 +471,7 @@ func main() {
 					Cols: []ColAttr{
 						{
 							Name:                "access_token",
-							Type:                ColType_Hash256,
+							Type:                ColType_JWT,
 							MaxLength:           0,
 							IsNullable:          false,
 							IsAutoIncrementable: false,
@@ -477,7 +484,7 @@ func main() {
 							IsAutoIncrementable: false,
 						},
 						{
-							Name:                "created_at",
+							Name:                "expiration_datetime",
 							Type:                ColType_TimestampWithTimezone,
 							MaxLength:           0,
 							IsNullable:          false,
