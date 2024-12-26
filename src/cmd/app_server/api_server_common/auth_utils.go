@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func GenerateToken() string {
+func GenerateHashString() string {
 	seed := time.Now().GoString()
 	binary := sha256.Sum256([]byte(seed))
 	hash := hex.EncodeToString(binary[:])

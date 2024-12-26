@@ -57,11 +57,11 @@ func (s *ApiServer) SignupRequest(c *gin.Context) {
 // ユーザーアカウント仮登録処理
 func (s *ApiServer) Signup(c *gin.Context) {
 	log.Println("server signup start")
-	
+
 	resCh := make(chan string)
 	s.commandCh <- &commands.SignupCommand{
 		EmailAddr: c.PostForm("EmailAddr"),
-		ResCh: resCh,
+		ResCh:     resCh,
 	}
 	result := <-resCh
 
@@ -73,9 +73,21 @@ func (s *ApiServer) Signup(c *gin.Context) {
 // ユーザーアカウント本登録処理
 // 認証用メールのリンクにアクセスされた場合の処理を想定したAPI
 func (s *ApiServer) MailAddrAuth(c *gin.Context) {
+	log.Println("server mailaddrauth start")
+
+	tokenString := c.Query("t")
+	// パラメータ t が取得できなかった場合、
+	if tokenString == "" {
+		c.JSON(http.StatusForbidden, gin.H{
+			"result": "forbidden",
+		})
+		return
+	}
+
 	resCh := make(chan string)
 	s.commandCh <- &commands.MailAddrAuthCommand{
-		ResCh: resCh,
+		TokenString: tokenString,
+		ResCh:       resCh,
 	}
 	result := <-resCh
 

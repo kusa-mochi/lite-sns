@@ -127,12 +127,14 @@ func main() {
 		serverConfigs.App.Port,
 		apiServerCommandCh,
 	)
+
+	// APIリクエスト受付開始
 	go apiServer.Run()
 
 	for {
 		select {
-		case cmd := <-apiServerCommandCh:
-			cmd.Exec(&serverConfigs)
+		case cmd := <-apiServerCommandCh: // APIリクエストはこのチャネルで受け取り、シングルスレッドで処理する。
+			cmd.Exec(&serverConfigs, db)
 		}
 	}
 }
