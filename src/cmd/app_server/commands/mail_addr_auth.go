@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"database/sql"
 	"fmt"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
@@ -13,7 +14,7 @@ type MailAddrAuthCommand struct {
 	ResCh       chan<- string
 }
 
-func (c *MailAddrAuthCommand) Exec(configs *server_configs.ServerConfigs) {
+func (c *MailAddrAuthCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) {
 	log.Println("mail addr auth exec")
 
 	tokenString := c.TokenString

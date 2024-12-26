@@ -2,6 +2,7 @@ package commands
 
 import (
 	"crypto/tls"
+	"database/sql"
 	"fmt"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
@@ -88,7 +89,7 @@ func (c *SignupCommand) sendAuthMail(configs *server_configs.SmtpConfig, toAddr 
 	client.Quit()
 }
 
-func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs) {
+func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) {
 	log.Println("email addr:", c.EmailAddr)
 
 	var (

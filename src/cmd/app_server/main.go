@@ -134,7 +134,7 @@ func main() {
 	for {
 		select {
 		case cmd := <-apiServerCommandCh: // APIリクエストはこのチャネルで受け取り、シングルスレッドで処理する。
-			cmd.Exec(&serverConfigs)
+			cmd.Exec(&serverConfigs, db)
 		}
 	}
 }
