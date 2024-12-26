@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"fmt"
+	"lite-sns/m/src/cmd/app_server/api_server_common"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
 	"net/mail"
@@ -97,16 +98,16 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	)
 
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
-	// secretKey := api_server_common.GenerateToken()
-	const secretKey string = "secretkey"
+	secretKey := api_server_common.GenerateHashString()
 
 	// サインアップ用アクセストークンを発行する。
 	// アクセストークンには有効期限が設定されている。
 	const tokenLifetime time.Duration = 10 * time.Minute
+	var expirationDatetime int64 = time.Now().Add(tokenLifetime).Unix()
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"exp": time.Now().Add(tokenLifetime).Unix(),
+			"exp": expirationDatetime,
 		},
 	)
 	tokenString, err := token.SignedString([]byte(secretKey))
@@ -114,8 +115,22 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		c.ResCh <- "failed to generate a token"
 		return
 	}
+	log.Println("token string:", tokenString)
 
-	// TODO: DBに、サインアップ用アクセストークンと秘密鍵を登録する。
+	// DBに、サインアップ用アクセストークンと秘密鍵を登録する。
+	stmt, err := db.Prepare("insert into signup_access_token(access_token, secret_key, expiration_datetime) values($1, $2, $3)")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	res, err := stmt.Exec(tokenString, secretKey, expirationDatetime)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	rowCnt, err := res.RowsAffected()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("ID = <not supported>, affected = %d\n", rowCnt)
 
 	// 認証用メールの本文を生成する。
 	body := fmt.Sprintf("access to the following link:\nhttp://localhost:12381/lite-sns/api/v1/mail_addr_auth?t=%s", tokenString)

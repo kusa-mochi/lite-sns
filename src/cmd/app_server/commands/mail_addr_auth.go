@@ -19,10 +19,29 @@ func (c *MailAddrAuthCommand) Exec(configs *server_configs.ServerConfigs, db *sq
 
 	tokenString := c.TokenString
 
-	// TODO: search and read a secret key from DB.
-	const secretKey string = "secretkey"
+	rows, err := db.Query("select secret_key from signup_access_token where access_token = $1", tokenString)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer rows.Close()
 
-	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	log.Println("query done")
+
+	var secretKey string = ""
+
+	for rows.Next() {
+		err := rows.Scan(&secretKey)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		log.Println("get secretKey from DB:", secretKey)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	_, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
