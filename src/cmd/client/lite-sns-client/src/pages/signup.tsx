@@ -1,6 +1,8 @@
 import Button from "../components/molecules/button"
+import { useConfig } from "../providers/configProvider"
 
 export default function Signup() {
+    const config = useConfig()
 
     function EncodeHTMLForm(data: any) {
         var params = []
@@ -26,7 +28,7 @@ export default function Signup() {
                 console.log("sending email succeeded")
             }
         }
-        xmlHttpReq.open("POST", "http://localhost:12381/lite-sns/api/v1/signup")
+        xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}/${config.appServer.apiPrefix}signup`)
         xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
         xmlHttpReq.send(EncodeHTMLForm({
             EmailAddr: "whoatemyapplepie@gmail.com",
