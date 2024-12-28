@@ -4,7 +4,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 // NOTE: この値は export せず、useConfig() の戻り値からアクセスして使う想定。
 const configData: LiteSnsClientConfig = {
     appServer: {
-        apiPrefix: "lite-sns/api/v1/",
+        apiPrefix: "/lite-sns/api/v1",
         ip: "localhost",
         port: 12381,
     },

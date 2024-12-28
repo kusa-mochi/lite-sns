@@ -28,7 +28,7 @@ export default function Signup() {
                 console.log("sending email succeeded")
             }
         }
-        xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}/${config.appServer.apiPrefix}signup`)
+        xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/signup`)
         xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
         xmlHttpReq.send(EncodeHTMLForm({
             EmailAddr: "whoatemyapplepie@gmail.com",
