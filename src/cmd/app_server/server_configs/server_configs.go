@@ -1,7 +1,8 @@
 package server_configs
 
 type AppConfig struct {
-	Port int `json:"port"`
+	Ip   string `json:"ip"`
+	Port int    `json:"port"`
 }
 
 type DbConfig struct {

@@ -141,7 +141,7 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	log.Printf("ID = <not supported>, affected = %d\n", rowCnt)
 
 	// 認証用メールの本文を生成する。
-	body := fmt.Sprintf("access to the following link:\nhttp://localhost:12381/lite-sns/api/v1/mail_addr_auth?t=%s", tokenString)
+	body := fmt.Sprintf("access to the following link:\nhttp://%s:%v/lite-sns/api/v1/mail_addr_auth?t=%s", configs.App.Ip, configs.App.Port, tokenString)
 
 	// 認証用メールを送信する。
 	c.sendAuthMail(&configs.Smtp, c.EmailAddr, subj, body)
