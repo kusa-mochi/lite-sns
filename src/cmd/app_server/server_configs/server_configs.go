@@ -1,8 +1,9 @@
 package server_configs
 
 type AppConfig struct {
-	Ip   string `json:"ip"`
-	Port int    `json:"port"`
+	ApiPrefix string `json:"api_prefix"`
+	Ip        string `json:"ip"`
+	Port      int    `json:"port"`
 }
 
 type DbConfig struct {
