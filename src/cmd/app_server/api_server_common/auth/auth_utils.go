@@ -1,4 +1,4 @@
-package api_server_common
+package auth_utils
 
 import (
 	"crypto/sha256"

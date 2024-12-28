@@ -4,7 +4,8 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"fmt"
-	"lite-sns/m/src/cmd/app_server/api_server_common"
+	auth_utils "lite-sns/m/src/cmd/app_server/api_server_common/auth"
+	db_utils "lite-sns/m/src/cmd/app_server/api_server_common/db"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
 	"net/mail"
@@ -98,7 +99,7 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	)
 
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
-	secretKey := api_server_common.GenerateHashString()
+	secretKey := auth_utils.GenerateHashString()
 
 	// サインアップ用アクセストークンを発行する。
 	// アクセストークンには有効期限が設定されている。
@@ -118,15 +119,22 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	log.Println("token string:", tokenString)
 
 	// DBに、サインアップ用アクセストークンと秘密鍵を登録する。
-	stmt, err := db.Prepare("insert into signup_access_token(access_token, secret_key, expiration_datetime) values($1, $2, $3)")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	res, err := stmt.Exec(tokenString, secretKey, expirationDatetime)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	rowCnt, err := res.RowsAffected()
+	rowCnt, err := db_utils.InsertInto(
+		db,
+		"signup_access_token",
+		db_utils.KeyValuePair{
+			Key:   "access_token",
+			Value: tokenString,
+		},
+		db_utils.KeyValuePair{
+			Key:   "secret_key",
+			Value: secretKey,
+		},
+		db_utils.KeyValuePair{
+			Key:   "expiration_datetime",
+			Value: expirationDatetime,
+		},
+	)
 	if err != nil {
 		log.Fatalln(err)
 	}
