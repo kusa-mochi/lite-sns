@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 )
 
 type KeyValuePair struct {
@@ -53,6 +54,8 @@ func InsertInto(db *sql.DB, tableName string, pairs ...KeyValuePair) (int64, err
 	}
 
 	prepare := fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s)", tableName, keys, placeholders)
+	log.Println("DB command:", prepare)
+	log.Println("DB command params:", placeholders)
 
 	stmt, err := db.Prepare(prepare)
 	if err != nil {
@@ -68,4 +71,70 @@ func InsertInto(db *sql.DB, tableName string, pairs ...KeyValuePair) (int64, err
 	}
 
 	return rowCnt, nil
+}
+
+// whereConditions: プレースホルダ（$1, $2, ...）を含むWHERE句。
+// whereParams: プレースホルダに渡すパラメータ。
+func SelectFrom(db *sql.DB, keys []string, tableName string, whereConditions string, whereParams ...any) ([]any, error) {
+	dbCommand := fmt.Sprintf(
+		"SELECT %s FROM %s %s",
+		strings.Join(keys, ","),
+		tableName,
+		whereConditions,
+	)
+	log.Println("DB command:", dbCommand)
+	log.Println("DB command params:", whereParams)
+
+	rows, err := db.Query(
+		dbCommand,
+		whereParams...,
+	)
+	if err != nil {
+		if rows != nil {
+			rows.Close()
+		}
+		return nil, fmt.Errorf("failed to run SELECT query | %s", err.Error())
+	}
+	defer rows.Close()
+
+	log.Println("query done")
+
+	ret := make([]any, 0)
+
+	for rows.Next() {
+		var p any
+		err := rows.Scan(&p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan returned records @ SelectFrom | %s", err.Error())
+		}
+		ret = append(ret, p)
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, fmt.Errorf("something error occured in rows object | %s", err.Error())
+	}
+
+	return ret, nil
+}
+
+// whereConditions: プレースホルダ（$1, $2, ...）を含むWHERE句。
+// whereParams: プレースホルダに渡すパラメータ。
+func DeleteFrom(db *sql.DB, tableName string, whereConditions string, whereParams ...any) error {
+	dbCommand := fmt.Sprintf(
+		"DELETE FROM %s %s",
+		tableName,
+		whereConditions,
+	)
+	log.Println("DB command:", dbCommand)
+	log.Println("DB command params:", whereParams)
+
+	_, err := db.Exec(
+		dbCommand,
+		whereParams...,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to execute DELETE command @ DeleteFrom | %s", err.Error())
+	}
+
+	return nil
 }
