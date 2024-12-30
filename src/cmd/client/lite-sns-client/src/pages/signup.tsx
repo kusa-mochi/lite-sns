@@ -15,7 +15,7 @@ enum InputError {
 
 export default function Signup() {
     const config = useConfig()
-    const MAX_LENGTH_USERNAME: number = 16
+    const MAX_LENGTH_USERNAME: number = 20
     const MAX_LENGTH_EMAILADDRESS: number = 254
     const MIN_LENGTH_PASSWORD: number = 12
     const MAX_LENGTH_PASSWORD: number = 128
