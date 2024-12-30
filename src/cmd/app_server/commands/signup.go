@@ -134,6 +134,18 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 			Value: tokenString,
 		},
 		db_utils.KeyValuePair{
+			Key:   "email_address",
+			Value: emailAddress,
+		},
+		db_utils.KeyValuePair{
+			Key:   "nickname",
+			Value: nickname,
+		},
+		db_utils.KeyValuePair{
+			Key:   "password_hash",
+			Value: passwordHash,
+		},
+		db_utils.KeyValuePair{
 			Key:   "secret_key",
 			Value: secretKey,
 		},
