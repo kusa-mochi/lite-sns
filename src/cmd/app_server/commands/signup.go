@@ -105,6 +105,8 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	log.Println("nickname:", nickname)
 	log.Println("password hash:", passwordHash)
 
+	// TODO: 受信したパラメータのバリデーション
+
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
 	secretKey := auth_utils.GenerateHashString()
 
