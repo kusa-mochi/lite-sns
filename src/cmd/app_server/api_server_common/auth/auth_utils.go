@@ -8,7 +8,11 @@ import (
 
 func GenerateHashString() string {
 	seed := time.Now().GoString()
-	binary := sha256.Sum256([]byte(seed))
+	return GetHashStringFrom(seed)
+}
+
+func GetHashStringFrom(str string) string {
+	binary := sha256.Sum256([]byte(str))
 	hash := hex.EncodeToString(binary[:])
 	return hash
 }

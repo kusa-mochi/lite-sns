@@ -61,6 +61,8 @@ func (s *ApiServer) Signup(c *gin.Context) {
 	resCh := make(chan string)
 	s.commandCh <- &commands.SignupCommand{
 		EmailAddr: c.PostForm("EmailAddr"),
+		Nickname:  c.PostForm("Nickname"),
+		Password:  c.PostForm("Password"),
 		ResCh:     resCh,
 	}
 	result := <-resCh

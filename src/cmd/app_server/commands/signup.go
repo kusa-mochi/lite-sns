@@ -17,6 +17,8 @@ import (
 
 type SignupCommand struct {
 	EmailAddr string
+	Nickname  string
+	Password  string
 	ResCh     chan<- string
 }
 
@@ -92,11 +94,16 @@ func (c *SignupCommand) sendAuthMail(configs *server_configs.SmtpConfig, toAddr 
 }
 
 func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) {
-	log.Println("email addr:", c.EmailAddr)
-
 	var (
-		subj string = "lite-sns email test"
+		emailAddress string = c.EmailAddr
+		nickname     string = c.Nickname
+		passwordHash string = auth_utils.GetHashStringFrom(c.Password)
+		subj         string = "lite-sns email test"
 	)
+
+	log.Println("email addr:", emailAddress)
+	log.Println("nickname:", nickname)
+	log.Println("password hash:", passwordHash)
 
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
 	secretKey := auth_utils.GenerateHashString()
