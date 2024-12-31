@@ -86,15 +86,32 @@ func (s *ApiServer) MailAddrAuth(c *gin.Context) {
 		return
 	}
 
-	resCh := make(chan string)
+	resCh := make(chan *commands.MailAddrAuthRes)
 	s.commandCh <- &commands.MailAddrAuthCommand{
 		TokenString: tokenString,
 		ResCh:       resCh,
 	}
 	result := <-resCh
+	if result.Error != nil {
+		switch result.Error.Error() {
+		case "invalid access token":
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": result.Error.Error(),
+			})
+		case "server error":
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": result.Error.Error(),
+			})
+		default:
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"error": result.Error.Error(),
+			})
+		}
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"result": result,
+		"result": result.Message,
 	})
 }
 
