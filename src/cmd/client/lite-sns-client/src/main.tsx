@@ -4,12 +4,15 @@ import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router'
 import { ThemeProvider } from './providers/themeProvider.tsx'
+import { ConfigProvider } from './providers/configProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeProvider th='light'>
-        <App />
+        <ConfigProvider>
+          <App />
+        </ConfigProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,

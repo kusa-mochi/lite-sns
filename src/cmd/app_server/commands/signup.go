@@ -4,18 +4,23 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"fmt"
-	"lite-sns/m/src/cmd/app_server/api_server_common"
+	auth_utils "lite-sns/m/src/cmd/app_server/api_server_common/auth"
+	db_utils "lite-sns/m/src/cmd/app_server/api_server_common/db"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
 	"net/mail"
 	"net/smtp"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type SignupCommand struct {
 	EmailAddr string
+	Nickname  string
+	Password  string
 	ResCh     chan<- string
 }
 
@@ -90,15 +95,121 @@ func (c *SignupCommand) sendAuthMail(configs *server_configs.SmtpConfig, toAddr 
 	client.Quit()
 }
 
-func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) {
-	log.Println("email addr:", c.EmailAddr)
+func (c *SignupCommand) validateEmailAddress(addr string) error {
+	_, err := mail.ParseAddress(addr)
+	if err != nil {
+		log.Println("invalid email address")
+	}
 
+	// TODO: ブラックリストの適用
+
+	return err
+}
+
+func (c *SignupCommand) validateNickname(name string) error {
+	if name == "" {
+		log.Println("invalid nickname")
+		return fmt.Errorf("")
+	}
+	if len(name) > 20 {
+		log.Println("too long nickname")
+		return fmt.Errorf("")
+	}
+
+	allWhiteSpace := true
+	for i, r := range name {
+		// 先頭が空白の場合、エラー
+		if i == 0 {
+			if unicode.IsSpace(r) {
+				log.Println("nickname starts from a space")
+				return fmt.Errorf("")
+			}
+		}
+
+		// 末尾が空白の場合、エラー
+		if i == len(name)-1 {
+			if unicode.IsSpace(r) {
+				log.Println("nickname ends with a space")
+				return fmt.Errorf("")
+			}
+		}
+
+		if !unicode.IsSpace(r) {
+			allWhiteSpace = false
+		}
+	}
+	// すべて空白の場合、エラー
+	if allWhiteSpace {
+		log.Println("nickname has only white space characters")
+		return fmt.Errorf("")
+	}
+
+	return nil
+}
+
+func (c *SignupCommand) validatePassword(password string) error {
+	if password == "" {
+		log.Println("invalid password")
+		return fmt.Errorf("")
+	}
+	if len(password) > 128 {
+		log.Println("too long password")
+		return fmt.Errorf("")
+	}
+	if len(password) < 12 {
+		log.Println("too short password")
+		return fmt.Errorf("")
+	}
+	for i := 0; i < len(password); i++ {
+		if password[i] > unicode.MaxASCII {
+			log.Println("password has no-ASCII character")
+			return fmt.Errorf("")
+		}
+	}
+	if strings.Contains(password, " ") {
+		log.Println("password contains whitespace")
+		return fmt.Errorf("")
+	}
+
+	return nil
+}
+
+func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) {
 	var (
-		subj string = "lite-sns email test"
+		emailAddress string = c.EmailAddr
+		nickname     string = c.Nickname
+		passwordHash string = auth_utils.GetHashStringFrom(c.Password)
+		subj         string = "lite-sns email test"
 	)
 
+	log.Println("email addr:", emailAddress)
+	log.Println("nickname:", nickname)
+	log.Println("password hash:", passwordHash)
+
+	// eメールアドレス のバリデーション
+	err := c.validateEmailAddress(emailAddress)
+	if err != nil {
+		c.ResCh <- "invalid signup data"
+		return
+	}
+
+	// ニックネーム のバリデーション
+	err = c.validateNickname(nickname)
+	if err != nil {
+		c.ResCh <- "invalid signup data"
+		return
+	}
+
+	// パスワード のバリデーション
+	// パスワードハッシュではなくパスワードをバリデーションする。
+	err = c.validatePassword(c.Password)
+	if err != nil {
+		c.ResCh <- "invalid signup data"
+		return
+	}
+
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
-	secretKey := api_server_common.GenerateHashString()
+	secretKey := auth_utils.GenerateHashString()
 
 	// サインアップ用アクセストークンを発行する。
 	// アクセストークンには有効期限が設定されている。
@@ -112,28 +223,50 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	)
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		c.ResCh <- "failed to generate a token"
+		log.Println("failed to generate a token string")
+		c.ResCh <- "server internal error"
 		return
 	}
 	log.Println("token string:", tokenString)
 
 	// DBに、サインアップ用アクセストークンと秘密鍵を登録する。
-	stmt, err := db.Prepare("insert into signup_access_token(access_token, secret_key, expiration_datetime) values($1, $2, $3)")
+	rowCnt, err := db_utils.InsertInto(
+		db,
+		"signup_access_token",
+		db_utils.KeyValuePair{
+			Key:   "access_token",
+			Value: tokenString,
+		},
+		db_utils.KeyValuePair{
+			Key:   "email_address",
+			Value: emailAddress,
+		},
+		db_utils.KeyValuePair{
+			Key:   "nickname",
+			Value: nickname,
+		},
+		db_utils.KeyValuePair{
+			Key:   "password_hash",
+			Value: passwordHash,
+		},
+		db_utils.KeyValuePair{
+			Key:   "secret_key",
+			Value: secretKey,
+		},
+		db_utils.KeyValuePair{
+			Key:   "expiration_datetime",
+			Value: expirationDatetime,
+		},
+	)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println("failed to insert a data into signup_access_token")
+		c.ResCh <- "server internal error"
+		return
 	}
-	res, err := stmt.Exec(tokenString, secretKey, expirationDatetime)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	rowCnt, err := res.RowsAffected()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Printf("ID = <not supported>, affected = %d\n", rowCnt)
+	log.Printf("ID = <not supported>, affected = %d", rowCnt)
 
 	// 認証用メールの本文を生成する。
-	body := fmt.Sprintf("access to the following link:\nhttp://localhost:12381/lite-sns/api/v1/mail_addr_auth?t=%s", tokenString)
+	body := fmt.Sprintf("access to the following link:\nhttp://%s:%v%s/mail_addr_auth?t=%s", configs.App.Ip, configs.App.Port, configs.App.ApiPrefix, tokenString)
 
 	// 認証用メールを送信する。
 	c.sendAuthMail(&configs.Smtp, c.EmailAddr, subj, body)

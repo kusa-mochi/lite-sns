@@ -27,10 +27,6 @@ func main() {
 	var serverConfigs server_configs.ServerConfigs
 	json.Unmarshal(configBytes, &serverConfigs)
 
-	const (
-		apiPathPrefix string = "/lite-sns/api/v1"
-	)
-
 	db, err := sql.Open(
 		"postgres",
 		fmt.Sprintf(
@@ -123,7 +119,7 @@ func main() {
 
 	apiServerCommandCh := make(chan interfaces.ApiServerCommandInterface)
 	apiServer := api_server.NewApiServer(
-		apiPathPrefix,
+		serverConfigs.App.ApiPrefix,
 		serverConfigs.App.Port,
 		apiServerCommandCh,
 	)

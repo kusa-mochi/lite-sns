@@ -477,6 +477,27 @@ func main() {
 							IsAutoIncrementable: false,
 						},
 						{
+							Name:                "email_address",
+							Type:                ColType_CharacterVarying,
+							MaxLength:           254,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "nickname",
+							Type:                ColType_CharacterVarying,
+							MaxLength:           20,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
+							Name:                "password_hash",
+							Type:                ColType_Hash256,
+							MaxLength:           0,
+							IsNullable:          false,
+							IsAutoIncrementable: false,
+						},
+						{
 							Name:                "secret_key",
 							Type:                ColType_Hash256,
 							MaxLength:           0,

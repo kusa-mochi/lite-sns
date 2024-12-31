@@ -1,5 +1,11 @@
 {
     "app": {
+        "api_prefix": "<api_prefix>",
+        "black_domain_list": [
+            "<domain1>",
+            "<domain2>"
+        ],
+        "ip": "<ip>",
         "port": 12345
     },
     "db": {
@@ -8,6 +14,10 @@
         "username": "<username>",
         "password": "<password>",
         "dbname": "<dbname>"
+    },
+    "frontend": {
+        "ip": "<ip>",
+        "port": 12345
     },
     "smtp": {
         "hostname": "<hostname>",
