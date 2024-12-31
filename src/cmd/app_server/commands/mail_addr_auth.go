@@ -17,8 +17,9 @@ type MailAddrAuthCommand struct {
 }
 
 type MailAddrAuthRes struct {
-	Message string
-	Error   error
+	Message    string
+	RedirectTo string
+	Error      error
 }
 
 func (c *MailAddrAuthCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) {
@@ -26,10 +27,12 @@ func (c *MailAddrAuthCommand) Exec(configs *server_configs.ServerConfigs, db *sq
 
 	tokenString := c.TokenString
 
+	cols := []string{"email_address", "nickname", "password_hash", "secret_key"}
+
 	// DBから、サインアップ用トークンに対応する秘密鍵を取得する。
-	keys, err := db_utils.SelectFrom(
+	selectData, err := db_utils.SelectFrom(
 		db,
-		[]string{"secret_key"},
+		cols,
 		"signup_access_token",
 		"where access_token = $1",
 		tokenString,
@@ -38,22 +41,28 @@ func (c *MailAddrAuthCommand) Exec(configs *server_configs.ServerConfigs, db *sq
 		// 何もせずコマンド終了。
 		log.Println("failed to find a secret key for an access token |", err.Error())
 		c.ResCh <- &MailAddrAuthRes{
-			Message: "",
-			Error:   fmt.Errorf("invalid access token"),
+			Message:    "",
+			RedirectTo: "",
+			Error:      fmt.Errorf("invalid access token"),
 		}
 		return
 	}
+
 	// トークン検証に必要な秘密鍵が見つからなかった場合、
-	if len(keys) == 0 {
+	if len(selectData) == 0 {
 		// 何もせずコマンド終了。
 		log.Println("there is no secret key related to the signup access token")
 		c.ResCh <- &MailAddrAuthRes{
-			Message: "",
-			Error:   fmt.Errorf("invalid access token"),
+			Message:    "",
+			RedirectTo: "",
+			Error:      fmt.Errorf("invalid access token"),
 		}
 		return
 	}
-	secretKey := keys[0].(string)
+
+	signupData := selectData[0]
+
+	secretKey := signupData["secret_key"].(string)
 
 	// DBからアクセストークンとそれに対応する秘密鍵を削除する。
 	err = db_utils.DeleteFrom(
@@ -66,8 +75,9 @@ func (c *MailAddrAuthCommand) Exec(configs *server_configs.ServerConfigs, db *sq
 		// 何もせずコマンド終了
 		log.Println("failed to delete a signup token |", err.Error())
 		c.ResCh <- &MailAddrAuthRes{
-			Message: "",
-			Error:   fmt.Errorf("server error"),
+			Message:    "",
+			RedirectTo: "",
+			Error:      fmt.Errorf("server error"),
 		}
 		return
 	}
@@ -85,15 +95,47 @@ func (c *MailAddrAuthCommand) Exec(configs *server_configs.ServerConfigs, db *sq
 	if err != nil {
 		log.Println("failed to parse a token |", err.Error())
 		c.ResCh <- &MailAddrAuthRes{
-			Message: "",
-			Error:   fmt.Errorf("invalid access token"),
+			Message:    "",
+			RedirectTo: "",
+			Error:      fmt.Errorf("invalid access token"),
 		}
 		return
 	}
 
+	// ユーザーアカウントをDBに新規登録する。
+	db_utils.InsertInto(
+		db,
+		"sns_user",
+		db_utils.KeyValuePair{
+			Key:   "name",
+			Value: signupData["nickname"],
+		},
+		db_utils.KeyValuePair{
+			Key:   "icon_type",
+			Value: "IconType_Default",
+		},
+		db_utils.KeyValuePair{
+			Key:   "icon_background_color",
+			Value: "F0F0F0",
+		},
+		db_utils.KeyValuePair{
+			Key:   "email_address",
+			Value: signupData["email_address"],
+		},
+		db_utils.KeyValuePair{
+			Key:   "password_hash",
+			Value: signupData["password_hash"],
+		},
+		db_utils.KeyValuePair{
+			Key:   "access_token_secret_key",
+			Value: "",
+		},
+	)
+
 	// コマンドの正常終了
 	c.ResCh <- &MailAddrAuthRes{
-		Message: "mail addr auth fin",
-		Error:   nil,
+		Message:    "mail addr auth fin",
+		RedirectTo: fmt.Sprintf("http://%s:%v/mail_addr_auth", configs.Frontend.Ip, configs.Frontend.Port),
+		Error:      nil,
 	}
 }

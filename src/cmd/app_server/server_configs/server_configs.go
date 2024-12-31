@@ -14,6 +14,11 @@ type DbConfig struct {
 	Dbname   string `json:"dbname"`
 }
 
+type FrontendConfig struct {
+	Ip   string `json:"ip"`
+	Port int    `json:"port"`
+}
+
 type SmtpConfig struct {
 	Hostname string `json:"hostname"`
 	Port     int    `json:"port"`
@@ -22,7 +27,8 @@ type SmtpConfig struct {
 }
 
 type ServerConfigs struct {
-	App  AppConfig  `json:"app"`
-	Db   DbConfig   `json:"db"`
-	Smtp SmtpConfig `json:"smtp"`
+	App      AppConfig      `json:"app"`
+	Db       DbConfig       `json:"db"`
+	Frontend FrontendConfig `json:"frontend"`
+	Smtp     SmtpConfig     `json:"smtp"`
 }

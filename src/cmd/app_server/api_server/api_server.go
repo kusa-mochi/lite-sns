@@ -110,9 +110,7 @@ func (s *ApiServer) MailAddrAuth(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"result": result.Message,
-	})
+	c.Redirect(http.StatusMovedPermanently, result.RedirectTo)
 }
 
 // メールアドレスとパスワードによるサインイン処理

@@ -55,7 +55,7 @@ func InsertInto(db *sql.DB, tableName string, pairs ...KeyValuePair) (int64, err
 
 	prepare := fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s)", tableName, keys, placeholders)
 	log.Println("DB command:", prepare)
-	log.Println("DB command params:", placeholders)
+	log.Println("DB command params:", values)
 
 	stmt, err := db.Prepare(prepare)
 	if err != nil {
@@ -75,7 +75,7 @@ func InsertInto(db *sql.DB, tableName string, pairs ...KeyValuePair) (int64, err
 
 // whereConditions: プレースホルダ（$1, $2, ...）を含むWHERE句。
 // whereParams: プレースホルダに渡すパラメータ。
-func SelectFrom(db *sql.DB, keys []string, tableName string, whereConditions string, whereParams ...any) ([]any, error) {
+func SelectFrom(db *sql.DB, keys []string, tableName string, whereConditions string, whereParams ...any) ([](map[string]any), error) {
 	dbCommand := fmt.Sprintf(
 		"SELECT %s FROM %s %s",
 		strings.Join(keys, ","),
@@ -99,15 +99,54 @@ func SelectFrom(db *sql.DB, keys []string, tableName string, whereConditions str
 
 	log.Println("query done")
 
-	ret := make([]any, 0)
+	ret := make([](map[string]any), 0)
+	nCols := len(keys)
 
 	for rows.Next() {
-		var p any
-		err := rows.Scan(&p)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan returned records @ SelectFrom | %s", err.Error())
+		// cols := make([]any, nCols)
+		// for i := 0; i < nCols; i++ {
+		// 	cols[i] =
+		// }
+		// err := rows.Scan(cols...)
+		// log.Println("cols:")
+		// log.Println(cols...)
+
+		var er error = nil
+		var buf [10]any
+
+		if nCols == 1 {
+			er = rows.Scan(&buf[0])
+		} else if nCols == 2 {
+			er = rows.Scan(&buf[0], &buf[1])
+		} else if nCols == 3 {
+			er = rows.Scan(&buf[0], &buf[1], &buf[2])
+		} else if nCols == 4 {
+			er = rows.Scan(&buf[0], &buf[1], &buf[2], &buf[3])
+		} else if nCols == 5 {
+			er = rows.Scan(&buf[0], &buf[1], &buf[2], &buf[3], &buf[4])
+		} else if nCols == 6 {
+			er = rows.Scan(&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5])
+		} else if nCols == 7 {
+			er = rows.Scan(&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5], &buf[6])
+		} else if nCols == 8 {
+			er = rows.Scan(&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5], &buf[6], &buf[7])
+		} else if nCols == 9 {
+			er = rows.Scan(&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5], &buf[6], &buf[7], &buf[8])
+		} else if nCols == 10 {
+			er = rows.Scan(&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5], &buf[6], &buf[7], &buf[8], &buf[9])
 		}
-		ret = append(ret, p)
+
+		if er != nil {
+			return nil, fmt.Errorf("failed to scan returned records @ SelectFrom | %s", er.Error())
+		}
+
+		row := make(map[string]any)
+		for i := 0; i < nCols; i++ {
+			row[keys[i]] = buf[i]
+		}
+
+		ret = append(ret, row)
+		// ret = append(ret, cols)
 	}
 	err = rows.Err()
 	if err != nil {

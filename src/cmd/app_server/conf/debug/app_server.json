@@ -15,6 +15,10 @@
         "password": "<password>",
         "dbname": "<dbname>"
     },
+    "frontend": {
+        "ip": "<ip>",
+        "port": 12345
+    },
     "smtp": {
         "hostname": "<hostname>",
         "port": 12345,
