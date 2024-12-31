@@ -64,7 +64,7 @@ export default function Signup() {
         xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/signup`)
         xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
         xmlHttpReq.send(encodeHTMLForm({
-            EmailAddr: "whoatemyapplepie@gmail.com",
+            EmailAddr: emailAddress,
             Nickname: nickname,
             Password: password,
         }))

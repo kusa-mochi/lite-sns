@@ -10,7 +10,9 @@ import (
 	"log"
 	"net/mail"
 	"net/smtp"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -93,6 +95,85 @@ func (c *SignupCommand) sendAuthMail(configs *server_configs.SmtpConfig, toAddr 
 	client.Quit()
 }
 
+func (c *SignupCommand) validateEmailAddress(addr string) error {
+	_, err := mail.ParseAddress(addr)
+	if err != nil {
+		log.Println("invalid email address")
+	}
+
+	// TODO: ブラックリストの適用
+
+	return err
+}
+
+func (c *SignupCommand) validateNickname(name string) error {
+	if name == "" {
+		log.Println("invalid nickname")
+		return fmt.Errorf("")
+	}
+	if len(name) > 20 {
+		log.Println("too long nickname")
+		return fmt.Errorf("")
+	}
+
+	allWhiteSpace := true
+	for i, r := range name {
+		// 先頭が空白の場合、エラー
+		if i == 0 {
+			if unicode.IsSpace(r) {
+				log.Println("nickname starts from a space")
+				return fmt.Errorf("")
+			}
+		}
+
+		// 末尾が空白の場合、エラー
+		if i == len(name)-1 {
+			if unicode.IsSpace(r) {
+				log.Println("nickname ends with a space")
+				return fmt.Errorf("")
+			}
+		}
+
+		if !unicode.IsSpace(r) {
+			allWhiteSpace = false
+		}
+	}
+	// すべて空白の場合、エラー
+	if allWhiteSpace {
+		log.Println("nickname has only white space characters")
+		return fmt.Errorf("")
+	}
+
+	return nil
+}
+
+func (c *SignupCommand) validatePassword(password string) error {
+	if password == "" {
+		log.Println("invalid password")
+		return fmt.Errorf("")
+	}
+	if len(password) > 128 {
+		log.Println("too long password")
+		return fmt.Errorf("")
+	}
+	if len(password) < 12 {
+		log.Println("too short password")
+		return fmt.Errorf("")
+	}
+	for i := 0; i < len(password); i++ {
+		if password[i] > unicode.MaxASCII {
+			log.Println("password has no-ASCII character")
+			return fmt.Errorf("")
+		}
+	}
+	if strings.Contains(password, " ") {
+		log.Println("password contains whitespace")
+		return fmt.Errorf("")
+	}
+
+	return nil
+}
+
 func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) {
 	var (
 		emailAddress string = c.EmailAddr
@@ -105,7 +186,27 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	log.Println("nickname:", nickname)
 	log.Println("password hash:", passwordHash)
 
-	// TODO: 受信したパラメータのバリデーション
+	// eメールアドレス のバリデーション
+	err := c.validateEmailAddress(emailAddress)
+	if err != nil {
+		c.ResCh <- "invalid signup data"
+		return
+	}
+
+	// ニックネーム のバリデーション
+	err = c.validateNickname(nickname)
+	if err != nil {
+		c.ResCh <- "invalid signup data"
+		return
+	}
+
+	// パスワード のバリデーション
+	// パスワードハッシュではなくパスワードをバリデーションする。
+	err = c.validatePassword(c.Password)
+	if err != nil {
+		c.ResCh <- "invalid signup data"
+		return
+	}
 
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
 	secretKey := auth_utils.GenerateHashString()
@@ -122,7 +223,8 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	)
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		c.ResCh <- "failed to generate a token"
+		log.Println("failed to generate a token string")
+		c.ResCh <- "server internal error"
 		return
 	}
 	log.Println("token string:", tokenString)
@@ -157,7 +259,9 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		},
 	)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println("failed to insert a data into signup_access_token")
+		c.ResCh <- "server internal error"
+		return
 	}
 	log.Printf("ID = <not supported>, affected = %d", rowCnt)
 
