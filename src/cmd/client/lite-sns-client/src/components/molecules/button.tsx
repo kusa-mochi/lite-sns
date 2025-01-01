@@ -5,8 +5,7 @@ import { useTheme } from "../../providers/themeProvider"
 type Props = {
     children?: ReactNode
     active?: boolean
-    enabled?: boolean
-    focused?: boolean
+    disabled?: boolean
     primary?: boolean
     secondary?: boolean
     onClick?: (e: MouseEvent) => void
@@ -14,7 +13,7 @@ type Props = {
 
 export default function Button (props: Props) {
     const theme = useTheme()
-    const { children, active, enabled, focused, primary, secondary, onClick } = props
+    const { children, active, disabled, primary, secondary, onClick } = props
     const [activeState, setActiveState] = useState(false)
     const [bgColor, setBgColor] = useState(theme.palette.secondary.main)
     const [fColor, setFColor] = useState(theme.palette.secondary.fontColor)
@@ -55,29 +54,37 @@ export default function Button (props: Props) {
         background-color: ${bgColor};
         color: ${fColor};
         box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+        border: none;
+        border-radius: 0;
         font-size: ${fSize}rem;
         padding: ${fSize/3}rem;
-        cursor: ${enabled === false ? "default" : "pointer"};
-        opacity: ${enabled === undefined || enabled === true ? "1" : "0.4"};
-        outline-color: ${outlineColor};
-        outline-style: solid;
-        outline-width: ${focused === true ? "midium" : "0"};
+        cursor: ${disabled === true ? "default" : "pointer"};
+        opacity: ${disabled === undefined || disabled === false ? "1" : "0.4"};
+        outline: none;
 
         &:hover {
-            filter: ${enabled === false ? "none" : "brightness(90%)"};
+            filter: ${disabled === true ? "none" : "brightness(90%)"};
+        }
+
+        &:focus {
+            outline-color: ${outlineColor};
+            outline-style: solid;
+            outline-width: 2px;
+            outline-offset: -2px;
         }
         
-        filter: ${activeState && enabled !== false ? "brightness(80%)" : "none"};
+        filter: ${activeState && disabled === false ? "brightness(80%)" : "none"};
     `
 
     return (
         <>
-            <div
+            <button
                 onClick={onClick ? onClick : () => {}}
                 className={buttonStyle}
+                disabled={disabled}
             >
                 {children}
-            </div>
+            </button>
         </>
     )
 }
