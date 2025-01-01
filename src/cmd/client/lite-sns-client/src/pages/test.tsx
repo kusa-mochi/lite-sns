@@ -13,8 +13,7 @@ export default function Test() {
                 This is a test component.
             </Button>
             <div>
-                <Button enabled={false}>Disabled button</Button>
-                <Button focused>Focused button</Button>
+                <Button disabled>Disabled button</Button>
                 <Button active>Active button</Button>
                 <Button onClick={ClickTest}>Click Test</Button>
                 <div>cnt:{cnt}</div>
