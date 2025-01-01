@@ -105,7 +105,7 @@ export default function Signup() {
             setIsEmailAddressInvalid(true)
             return InputError.Empty
         }
-        if (!emailAddress.match(/^[^\.].*@[a-zA-Z0-9_-]+\.[a-zA-Z0-9\._-]+[^\.]$/)) {
+        if (!emailAddress.match(/^[^\.].*@[a-zA-Z0-9_-]+\.[a-zA-Z0-9\._-]+$/)) {
             setIsEmailAddressInvalid(true)
             return InputError.InvalidFormat
         }
@@ -129,11 +129,11 @@ export default function Signup() {
             setIsPasswordInvalid(true)
             return InputError.TooLong
         }
-        if (!password.match(/\S/g)) {
+        if (!password.match(/^\S+$/g)) {
             setIsPasswordInvalid(true)
             return InputError.Empty
         }
-        // if use only ASCII characters,
+        // ASCIIコード以外の文字が含まれている場合、
         if (!/^[\x00-\x7F]+$/.test(password)) {
             setIsPasswordInvalid(true)
             return InputError.InvalidCharacter
