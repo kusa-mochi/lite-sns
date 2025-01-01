@@ -54,24 +54,6 @@ func (s *ApiServer) SignupRequest(c *gin.Context) {
 	})
 }
 
-// ユーザーアカウント仮登録処理
-func (s *ApiServer) Signup(c *gin.Context) {
-	log.Println("server signup start")
-
-	resCh := make(chan string)
-	s.commandCh <- &commands.SignupCommand{
-		EmailAddr: c.PostForm("EmailAddr"),
-		Nickname:  c.PostForm("Nickname"),
-		Password:  c.PostForm("Password"),
-		ResCh:     resCh,
-	}
-	result := <-resCh
-
-	c.JSON(http.StatusOK, gin.H{
-		"result": result,
-	})
-}
-
 // ユーザーアカウント本登録処理
 // 認証用メールのリンクにアクセスされた場合の処理を想定したAPI
 func (s *ApiServer) MailAddrAuth(c *gin.Context) {
@@ -111,17 +93,4 @@ func (s *ApiServer) MailAddrAuth(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusMovedPermanently, result.RedirectTo)
-}
-
-// メールアドレスとパスワードによるサインイン処理
-func (s *ApiServer) Signin(c *gin.Context) {
-	resCh := make(chan string)
-	s.commandCh <- &commands.SigninCommand{
-		ResCh: resCh,
-	}
-	result := <-resCh
-
-	c.JSON(http.StatusOK, gin.H{
-		"result": result,
-	})
 }
