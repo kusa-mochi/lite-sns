@@ -1,24 +1,104 @@
-import { MouseEvent, useState } from "react"
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react"
 import Button from "../components/molecules/button"
+import { css } from "@emotion/css"
 
 export default function Signin() {
-    const [cnt, setCnt] = useState(0)
-    function ClickTest(e: MouseEvent) {
-        setCnt(cnt + 1)
-        console.log(`x:${e.pageX}, y:${e.pageY}`)
+    const MAX_LENGTH_EMAILADDRESS: number = 254
+    const MAX_LENGTH_PASSWORD: number = 128
+
+    const [emailAddress, setEmailAddress] = useState("")
+    const [password, setPassword] = useState("")
+    const [isSigninEnabled, setIsSigninEnabled] = useState(false)
+
+    function validateEmailAddress(): boolean {
+        console.log("validating email address...")
+
+        return (
+            emailAddress.length > 0 &&
+            emailAddress.length <= MAX_LENGTH_EMAILADDRESS &&
+            emailAddress.match(/^\S+$/g) !== null &&
+            emailAddress.match(/^[^\.].*@[a-zA-Z0-9_-]+\.[a-zA-Z0-9\._-]+$/) !== null
+        )
     }
+
+    function validatePassword(): boolean {
+        console.log("validating password...")
+
+        return (
+            password.length > 0 &&
+            password.length <= MAX_LENGTH_PASSWORD &&
+            password.match(/^\S+$/g) !== null
+        )
+    }
+
+    function validate() {
+        const isValidEmailAddr: boolean = validateEmailAddress()
+        const isValidPassword: boolean = validatePassword()
+
+        setIsSigninEnabled(isValidEmailAddr && isValidPassword)
+    }
+
+    function onEmailAddrChanged(e: ChangeEvent<HTMLInputElement>) {
+        setEmailAddress(e.target.value)
+    }
+
+    function onPasswordChanged(e: ChangeEvent<HTMLInputElement>) {
+        setPassword(e.target.value)
+    }
+
+    function signin() {
+        console.log("signing in...")
+    }
+
+    useEffect(() => {
+        validate()
+    }, [emailAddress, password])
+
+    const formStyle = css`
+        display: grid;
+        grid-template-columns: 216px 260px;
+    `
+    const labelStyle = css`
+        text-align: left;
+    `
+    const requireStyle = css`
+        color: red;
+    `
+    const inputStyle = css`
+        width: 100%;
+    `
+
     return (
         <>
-            <Button primary>
-                This is a test component.
-            </Button>
-            <div>
-                <Button disabled>Disabled button</Button>
-                <Button active>Active button</Button>
-                <Button onClick={ClickTest}>Click Test</Button>
-                <div>cnt:{cnt}</div>
-                <p>Go to <a href="/test2">Test2 Page</a></p>
+            <div className={formStyle}>
+                <div className={labelStyle}>
+                    <span className={requireStyle}>*</span>メールアドレス
+                </div>
+                <div>
+                    <input
+                        className={inputStyle}
+                        type="email"
+                        value={emailAddress}
+                        onChange={onEmailAddrChanged}
+                        placeholder={"例: example@slash-mochi.net"}
+                        maxLength={MAX_LENGTH_EMAILADDRESS}
+                    />
+                </div>
+                <div className={labelStyle}>
+                    <span className={requireStyle}>*</span>パスワード
+                </div>
+                <div>
+                    <input
+                        className={inputStyle}
+                        type="password"
+                        value={password}
+                        onChange={onPasswordChanged}
+                        maxLength={MAX_LENGTH_PASSWORD}
+                    />
+                </div>
             </div>
+            <Button disabled={!isSigninEnabled} onClick={() => signin()}>サインイン</Button>
+            <p>Go to <a href="/test2">Test2 Page</a></p>
         </>
     )
 }
