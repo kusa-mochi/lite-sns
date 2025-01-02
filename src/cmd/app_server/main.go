@@ -47,10 +47,7 @@ func main() {
 
 	apiServerCommandCh := make(chan interfaces.ApiServerCommandInterface)
 	apiServer := api_server.NewApiServer(
-		serverConfigs.App.ApiPrefix,
-		serverConfigs.App.Port,
-		serverConfigs.Frontend.Ip,
-		serverConfigs.Frontend.Port,
+		&serverConfigs,
 		apiServerCommandCh,
 	)
 
