@@ -177,3 +177,20 @@ func DeleteFrom(db *sql.DB, tableName string, whereConditions string, whereParam
 
 	return nil
 }
+
+func PrepareAndExec(db *sql.DB, prepare string, params ...any) (int64, error) {
+	stmt, err := db.Prepare(prepare)
+	if err != nil {
+		return 0, fmt.Errorf("failed to prepare db execution command: %s (%v) @ PrepareAndExec | %s", prepare, params, err.Error())
+	}
+	res, err := stmt.Exec(params...)
+	if err != nil {
+		return 0, fmt.Errorf("failed to execute db command @ PrepareAndExec | %s", err.Error())
+	}
+	rowCnt, err := res.RowsAffected()
+	if err != nil {
+		return 0, fmt.Errorf("failed to get rows affected @ PrepareAndExec | %s", err.Error())
+	}
+
+	return rowCnt, nil
+}
