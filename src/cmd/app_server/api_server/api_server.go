@@ -17,6 +17,18 @@ type ApiServer struct {
 	commandCh chan<- interfaces.ApiServerCommandInterface
 }
 
+type RestMethod int
+
+const (
+	RestMethod_GET = iota
+	RestMethod_POST
+)
+
+type ApiMetaData struct {
+	Method       RestMethod
+	CallbackFunc func(*gin.Context)
+}
+
 func NewApiServer(
 	configs *server_configs.ServerConfigs,
 	commandCh chan<- interfaces.ApiServerCommandInterface,
@@ -35,9 +47,32 @@ func NewApiServer(
 
 	log.Println("configured CORS")
 
-	s.r.POST(fmt.Sprintf("%s/signup", configs.App.ApiPrefix), s.Signup)
-	s.r.GET(fmt.Sprintf("%s/mail_addr_auth", configs.App.ApiPrefix), s.MailAddrAuth)
-	s.r.POST(fmt.Sprintf("%s/signin", configs.App.ApiPrefix), s.Signin)
+	// data for API definitions
+	var callbacks map[string]ApiMetaData = map[string]ApiMetaData{
+		"signup": {
+			Method:       RestMethod_POST,
+			CallbackFunc: s.Signup,
+		},
+		"mail_addr_auth": {
+			Method:       RestMethod_GET,
+			CallbackFunc: s.MailAddrAuth,
+		},
+		"signin": {
+			Method:       RestMethod_POST,
+			CallbackFunc: s.Signin,
+		},
+	}
+
+	// set API callbacks
+	for apiName, apiMetaData := range callbacks {
+		apiPath := fmt.Sprintf("%s/%s", configs.App.ApiPrefix, apiName)
+		switch apiMetaData.Method {
+		case RestMethod_GET:
+			s.r.GET(apiPath, apiMetaData.CallbackFunc)
+		case RestMethod_POST:
+			s.r.POST(apiPath, apiMetaData.CallbackFunc)
+		}
+	}
 
 	log.Println("gin callbacks is ready")
 
