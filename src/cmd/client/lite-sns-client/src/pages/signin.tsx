@@ -61,6 +61,13 @@ export default function Signin() {
                 this.status === HTTP_STATUS_OK
             ) {
                 console.log("sign in succeeded")
+                
+                const res = JSON.parse(this.response)
+                console.log(res.token)  // APIサーバーが発行したアクセストークン
+
+                // TODO: アクセストークンをコンテキストに保存し、任意のページで使えるようにする。
+
+                location.replace("/timeline")
             }
         }
         xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/signin`)
