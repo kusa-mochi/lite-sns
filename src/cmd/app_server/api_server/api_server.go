@@ -48,16 +48,3 @@ func NewApiServer(
 func (s *ApiServer) Run() {
 	s.r.Run(fmt.Sprintf(":%d", s.port)) // エラーが発生しない限りここで処理がブロックされる。
 }
-
-// ユーザーアカウント登録リクエストを受け付けるAPI
-func (s *ApiServer) SignupRequest(c *gin.Context) {
-	resCh := make(chan string)
-	s.commandCh <- &commands.SignupRequestCommand{
-		ResCh: resCh,
-	}
-	result := <-resCh
-
-	c.JSON(http.StatusOK, gin.H{
-		"result": result,
-	})
-}
