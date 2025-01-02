@@ -121,6 +121,8 @@ func main() {
 	apiServer := api_server.NewApiServer(
 		serverConfigs.App.ApiPrefix,
 		serverConfigs.App.Port,
+		serverConfigs.Frontend.Ip,
+		serverConfigs.Frontend.Port,
 		apiServerCommandCh,
 	)
 

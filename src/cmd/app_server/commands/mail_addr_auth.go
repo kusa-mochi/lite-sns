@@ -13,7 +13,6 @@ import (
 type MailAddrAuthCommand struct {
 	TokenString string
 	ResCh       chan<- *MailAddrAuthRes
-	Error       error
 }
 
 type MailAddrAuthRes struct {
@@ -77,7 +76,7 @@ func (c *MailAddrAuthCommand) Exec(configs *server_configs.ServerConfigs, db *sq
 		c.ResCh <- &MailAddrAuthRes{
 			Message:    "",
 			RedirectTo: "",
-			Error:      fmt.Errorf("server error"),
+			Error:      fmt.Errorf("internal server error"),
 		}
 		return
 	}

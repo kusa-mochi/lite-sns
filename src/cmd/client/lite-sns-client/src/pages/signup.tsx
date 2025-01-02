@@ -2,6 +2,7 @@ import { useState } from "react"
 import Button from "../components/molecules/button"
 import { useConfig } from "../providers/configProvider"
 import { css } from "@emotion/css"
+import { encodeHTMLForm } from "../utils/api_utils"
 
 enum InputError {
     None = 0,
@@ -31,17 +32,6 @@ export default function Signup() {
 
     const [passwordConfirm, setPasswordConfirm] = useState("")
     const [isPasswordConfirmInvalid, setIsPasswordConfirmInvalid] = useState(false)
-
-    function encodeHTMLForm(data: any) {
-        var params = []
-        for (const name in data) {
-            const val = data[name]
-            const param = encodeURIComponent(name) + "=" + encodeURIComponent(val)
-            params.push(param)
-        }
-
-        return params.join("&").replace(/%20/g, "+")
-    }
 
     function sendEmail() {
         // 入力値チェック
@@ -105,7 +95,7 @@ export default function Signup() {
             setIsEmailAddressInvalid(true)
             return InputError.Empty
         }
-        if (!emailAddress.match(/^[^\.].*@[a-zA-Z0-9_-]+\.[a-zA-Z0-9\._-]+[^\.]$/)) {
+        if (!emailAddress.match(/^[^\.].*@[a-zA-Z0-9_-]+\.[a-zA-Z0-9\._-]+$/)) {
             setIsEmailAddressInvalid(true)
             return InputError.InvalidFormat
         }
@@ -129,11 +119,11 @@ export default function Signup() {
             setIsPasswordInvalid(true)
             return InputError.TooLong
         }
-        if (!password.match(/\S/g)) {
+        if (!password.match(/^\S+$/g)) {
             setIsPasswordInvalid(true)
             return InputError.Empty
         }
-        // if use only ASCII characters,
+        // ASCIIコード以外の文字が含まれている場合、
         if (!/^[\x00-\x7F]+$/.test(password)) {
             setIsPasswordInvalid(true)
             return InputError.InvalidCharacter

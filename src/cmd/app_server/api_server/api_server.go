@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"lite-sns/m/src/cmd/app_server/commands"
 	"lite-sns/m/src/cmd/app_server/interfaces"
-	"log"
 	"net/http"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +21,8 @@ type ApiServer struct {
 func NewApiServer(
 	apiPathPrefix string,
 	port int,
+	frontendIp string,
+	frontendPort int,
 	commandCh chan<- interfaces.ApiServerCommandInterface,
 ) *ApiServer {
 	s := &ApiServer{
@@ -28,6 +31,11 @@ func NewApiServer(
 		port:          port,
 		commandCh:     commandCh,
 	}
+	s.r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{fmt.Sprintf("http://%s:%v", frontendIp, frontendPort)}, // TODO: TLS対応
+		AllowMethods: []string{"GET", "POST"},
+		MaxAge:       24 * time.Hour,
+	}))
 
 	s.r.POST(fmt.Sprintf("%s/signup_request", apiPathPrefix), s.SignupRequest)
 	s.r.POST(fmt.Sprintf("%s/signup", apiPathPrefix), s.Signup)
@@ -45,78 +53,6 @@ func (s *ApiServer) Run() {
 func (s *ApiServer) SignupRequest(c *gin.Context) {
 	resCh := make(chan string)
 	s.commandCh <- &commands.SignupRequestCommand{
-		ResCh: resCh,
-	}
-	result := <-resCh
-
-	c.JSON(http.StatusOK, gin.H{
-		"result": result,
-	})
-}
-
-// ユーザーアカウント仮登録処理
-func (s *ApiServer) Signup(c *gin.Context) {
-	log.Println("server signup start")
-
-	resCh := make(chan string)
-	s.commandCh <- &commands.SignupCommand{
-		EmailAddr: c.PostForm("EmailAddr"),
-		Nickname:  c.PostForm("Nickname"),
-		Password:  c.PostForm("Password"),
-		ResCh:     resCh,
-	}
-	result := <-resCh
-
-	c.JSON(http.StatusOK, gin.H{
-		"result": result,
-	})
-}
-
-// ユーザーアカウント本登録処理
-// 認証用メールのリンクにアクセスされた場合の処理を想定したAPI
-func (s *ApiServer) MailAddrAuth(c *gin.Context) {
-	log.Println("server mailaddrauth start")
-
-	tokenString := c.Query("t")
-	// パラメータ t が取得できなかった場合、
-	if tokenString == "" {
-		c.JSON(http.StatusForbidden, gin.H{
-			"result": "forbidden",
-		})
-		return
-	}
-
-	resCh := make(chan *commands.MailAddrAuthRes)
-	s.commandCh <- &commands.MailAddrAuthCommand{
-		TokenString: tokenString,
-		ResCh:       resCh,
-	}
-	result := <-resCh
-	if result.Error != nil {
-		switch result.Error.Error() {
-		case "invalid access token":
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": result.Error.Error(),
-			})
-		case "server error":
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": result.Error.Error(),
-			})
-		default:
-			c.JSON(http.StatusServiceUnavailable, gin.H{
-				"error": result.Error.Error(),
-			})
-		}
-		return
-	}
-
-	c.Redirect(http.StatusMovedPermanently, result.RedirectTo)
-}
-
-// メールアドレスとパスワードによるサインイン処理
-func (s *ApiServer) Signin(c *gin.Context) {
-	resCh := make(chan string)
-	s.commandCh <- &commands.SigninCommand{
 		ResCh: resCh,
 	}
 	result := <-resCh
