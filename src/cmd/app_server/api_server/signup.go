@@ -104,7 +104,7 @@ func (s *ApiServer) Signup(c *gin.Context) {
 
 	log.Println("email addr:", emailAddr)
 	log.Println("nickname:", nickname)
-	log.Println("password hash:", password)
+	log.Println("password:", password)
 
 	// 受信したデータのバリデーション
 	// スループット確保のためバリデーションのみこのゴルーチンで処理する。
