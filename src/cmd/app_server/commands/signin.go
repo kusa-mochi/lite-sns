@@ -81,7 +81,7 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	// このユーザー専用の秘密鍵を生成する。（ユーザーには共有せず、サーバー上のみで秘匿するデータ）
 	secretKey := auth_utils.GenerateHashString()
 
-	// 有効期限付のアクセストークンを発行する。
+	// 秘密鍵を用いて有効期限付のアクセストークンを発行する。
 	const tokenLifetime time.Duration = 7 * 24 * time.Hour
 	expirationDatetime := time.Now().Add(tokenLifetime).Unix()
 	token := jwt.NewWithClaims(
@@ -100,6 +100,8 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		}
 		return
 	}
+
+	// 秘密鍵をDBに保存する。
 
 	// コマンド正常終了
 	c.ResCh <- &SigninRes{
