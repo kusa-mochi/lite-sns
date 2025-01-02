@@ -30,6 +30,8 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	emailAddress := c.MailAddr
 	passwordHash := c.PasswordHash
 
+	log.Println("email address:", emailAddress)
+
 	// DBのユーザーテーブルについて、メールアドレスが一致するレコードを検索・取得する。
 	selectData, err := db_utils.SelectFrom(
 		db,
@@ -102,6 +104,23 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	}
 
 	// 秘密鍵をDBに保存する。
+	log.Println("saving secret key:", secretKey)
+	rowCnt, err := db_utils.PrepareAndExec(
+		db,
+		"UPDATE sns_user SET access_token_secret_key = $1 WHERE email_address = $2",
+		secretKey,
+		emailAddress,
+	)
+	if err != nil {
+		log.Println("failed to update secret key")
+		c.ResCh <- &SigninRes{
+			Message:     "",
+			TokenString: "",
+			Error:       fmt.Errorf("internal server error"),
+		}
+		return
+	}
+	log.Printf("ID = <not supported>, affected = %d", rowCnt)
 
 	// コマンド正常終了
 	c.ResCh <- &SigninRes{
