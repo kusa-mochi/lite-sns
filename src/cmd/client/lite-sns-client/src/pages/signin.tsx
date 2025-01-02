@@ -1,8 +1,11 @@
-import { ChangeEvent, MouseEvent, useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import Button from "../components/molecules/button"
 import { css } from "@emotion/css"
+import { useConfig } from "../providers/configProvider"
+import { encodeHTMLForm } from "../utils/api_utils"
 
 export default function Signin() {
+    const config = useConfig()
     const MAX_LENGTH_EMAILADDRESS: number = 254
     const MAX_LENGTH_PASSWORD: number = 128
 
@@ -48,6 +51,24 @@ export default function Signin() {
 
     function signin() {
         console.log("signing in...")
+
+        const xmlHttpReq = new XMLHttpRequest()
+        xmlHttpReq.onreadystatechange = function () {
+            const READYSTATE_COMPLETED: number = 4
+            const HTTP_STATUS_OK: number = 200
+            if (
+                this.readyState === READYSTATE_COMPLETED &&
+                this.status === HTTP_STATUS_OK
+            ) {
+                console.log("sign in succeeded")
+            }
+        }
+        xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/signin`)
+        xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+        xmlHttpReq.send(encodeHTMLForm({
+            EmailAddr: emailAddress,
+            Password: password,
+        }))
     }
 
     useEffect(() => {
