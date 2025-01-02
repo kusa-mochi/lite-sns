@@ -29,7 +29,7 @@ func (s *ApiServer) validateNickname(name string) error {
 		log.Println("invalid nickname")
 		return fmt.Errorf("")
 	}
-	if len(name) > 20 {
+	if len([]rune(name)) > 20 {
 		log.Println("too long nickname")
 		return fmt.Errorf("")
 	}
