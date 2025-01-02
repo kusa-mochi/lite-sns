@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"lite-sns/m/src/cmd/app_server/commands"
 	"lite-sns/m/src/cmd/app_server/interfaces"
-	"log"
 	"net/http"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +21,8 @@ type ApiServer struct {
 func NewApiServer(
 	apiPathPrefix string,
 	port int,
+	frontendIp string,
+	frontendPort int,
 	commandCh chan<- interfaces.ApiServerCommandInterface,
 ) *ApiServer {
 	s := &ApiServer{
@@ -28,6 +31,11 @@ func NewApiServer(
 		port:          port,
 		commandCh:     commandCh,
 	}
+	s.r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{fmt.Sprintf("http://%s:%v", frontendIp, frontendPort)}, // TODO: TLS対応
+		AllowMethods: []string{"GET", "POST"},
+		MaxAge:       24 * time.Hour,
+	}))
 
 	s.r.POST(fmt.Sprintf("%s/signup_request", apiPathPrefix), s.SignupRequest)
 	s.r.POST(fmt.Sprintf("%s/signup", apiPathPrefix), s.Signup)
