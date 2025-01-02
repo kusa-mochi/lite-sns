@@ -2,6 +2,7 @@ import { useState } from "react"
 import Button from "../components/molecules/button"
 import { useConfig } from "../providers/configProvider"
 import { css } from "@emotion/css"
+import { encodeHTMLForm } from "../utils/api_utils"
 
 enum InputError {
     None = 0,
@@ -31,17 +32,6 @@ export default function Signup() {
 
     const [passwordConfirm, setPasswordConfirm] = useState("")
     const [isPasswordConfirmInvalid, setIsPasswordConfirmInvalid] = useState(false)
-
-    function encodeHTMLForm(data: any) {
-        var params = []
-        for (const name in data) {
-            const val = data[name]
-            const param = encodeURIComponent(name) + "=" + encodeURIComponent(val)
-            params.push(param)
-        }
-
-        return params.join("&").replace(/%20/g, "+")
-    }
 
     function sendEmail() {
         // 入力値チェック
