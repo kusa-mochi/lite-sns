@@ -116,8 +116,8 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	)
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		log.Println("failed to generate a token string")
-		c.ResCh <- "server internal error"
+		log.Println("failed to generate a signup-token string")
+		c.ResCh <- "internal server error"
 		return
 	}
 	log.Println("token string:", tokenString)
