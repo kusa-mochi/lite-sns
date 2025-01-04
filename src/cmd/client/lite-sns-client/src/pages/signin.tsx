@@ -64,9 +64,10 @@ export default function Signin() {
                 console.log("sign in succeeded")
                 
                 const res = JSON.parse(this.response)
-                console.log(res.token)  // APIサーバーが発行したアクセストークン
+                console.log(`token:   ${res.token}`)      // APIサーバーが発行したアクセストークン
+                console.log(`user id: ${res.user_id}`)    // ユーザーID（固有の数値）
 
-                // TODO: アクセストークンをコンテキストに保存し、任意のページで使えるようにする。
+                // TODO: アクセストークンとユーザーID（固有の数値）をコンテキストに保存し、任意のページで使えるようにする。
 
                 location.replace("/timeline")
             }
