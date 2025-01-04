@@ -2,7 +2,6 @@ package api_server
 
 import (
 	"fmt"
-	auth_utils "lite-sns/m/src/cmd/app_server/api_server_common/auth"
 	"lite-sns/m/src/cmd/app_server/interfaces"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
@@ -53,7 +52,7 @@ func NewApiServer(
 	// 適切なアクセストークンの使用でアクセス可能なhandler
 	authUserGroup := s.r.Group(fmt.Sprintf("%s/auth_user", configs.App.ApiPrefix))
 	authUserGroup.Use(
-		auth_utils.ValidateTokenMiddleware,
+		s.ValidateTokenMiddleware,
 	)
 	{
 		authUserGroup.POST("/get_user_info", s.GetUserInfo)
@@ -67,4 +66,17 @@ func NewApiServer(
 func (s *ApiServer) Run() {
 	log.Println("app server is now listening...")
 	s.r.Run(fmt.Sprintf(":%d", s.configs.App.Port)) // エラーが発生しない限りここで処理がブロックされる。
+}
+
+func (s *ApiServer) ValidateTokenMiddleware(c *gin.Context) {
+	// TODO: HTTPヘッダからアクセストークンを取得する。
+
+	// TODO: HTTPヘッダからユーザーIDを取得する。
+
+	// TODO: ユーザーIDに対応する秘密鍵をDBから取得する。
+	// TODO: 処理の原子性確保・順序保証のためDB処理はcommandsパッケージで行う。
+
+	// TODO: アクセストークンを検証する。
+
+	c.Next()
 }
