@@ -153,7 +153,7 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	)
 	if err != nil {
 		log.Println("failed to insert a data into signup_access_token")
-		c.ResCh <- "server internal error"
+		c.ResCh <- "internal server error"
 		return
 	}
 	log.Printf("ID = <not supported>, affected = %d", rowCnt)
