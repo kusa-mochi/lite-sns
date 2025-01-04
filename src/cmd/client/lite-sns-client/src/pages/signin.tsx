@@ -51,7 +51,8 @@ export default function Signin() {
 
     function signin() {
         console.log("signing in...")
-
+        const apiPath: string = `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/public/signin`
+        console.log(`api path: ${apiPath}`)
         const xmlHttpReq = new XMLHttpRequest()
         xmlHttpReq.onreadystatechange = function () {
             const READYSTATE_COMPLETED: number = 4
@@ -70,7 +71,7 @@ export default function Signin() {
                 location.replace("/timeline")
             }
         }
-        xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/signin`)
+        xmlHttpReq.open("POST", apiPath)
         xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
         xmlHttpReq.send(encodeHTMLForm({
             EmailAddr: emailAddress,

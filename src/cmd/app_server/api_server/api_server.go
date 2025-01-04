@@ -2,6 +2,7 @@ package api_server
 
 import (
 	"fmt"
+	auth_utils "lite-sns/m/src/cmd/app_server/api_server_common/auth"
 	"lite-sns/m/src/cmd/app_server/interfaces"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
@@ -17,18 +18,6 @@ type ApiServer struct {
 	commandCh chan<- interfaces.ApiServerCommandInterface
 }
 
-type RestMethod int
-
-const (
-	RestMethod_GET = iota
-	RestMethod_POST
-)
-
-type ApiMetaData struct {
-	Method       RestMethod
-	CallbackFunc func(*gin.Context)
-}
-
 func NewApiServer(
 	configs *server_configs.ServerConfigs,
 	commandCh chan<- interfaces.ApiServerCommandInterface,
@@ -38,40 +27,36 @@ func NewApiServer(
 		configs:   configs,
 		commandCh: commandCh,
 	}
-	s.r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{fmt.Sprintf("http://%s:%v", configs.Frontend.Ip, configs.Frontend.Port)}, // TODO: TLS対応
-		AllowMethods: []string{"GET", "POST"},
-		AllowHeaders: []string{"Origin"},
-		MaxAge:       24 * time.Hour,
-	}))
+
+	// すべてのAPIに適用する設定・ミドルウェア
+	s.r.Use(
+		cors.New(
+			cors.Config{
+				AllowOrigins: []string{fmt.Sprintf("http://%s:%v", configs.Frontend.Ip, configs.Frontend.Port)}, // TODO: TLS対応
+				AllowMethods: []string{"GET", "POST"},
+				AllowHeaders: []string{"Origin"},
+				MaxAge:       24 * time.Hour,
+			},
+		),
+	)
 
 	log.Println("configured CORS")
 
-	// data for API definitions
-	var callbacks map[string]ApiMetaData = map[string]ApiMetaData{
-		"signup": {
-			Method:       RestMethod_POST,
-			CallbackFunc: s.Signup,
-		},
-		"mail_addr_auth": {
-			Method:       RestMethod_GET,
-			CallbackFunc: s.MailAddrAuth,
-		},
-		"signin": {
-			Method:       RestMethod_POST,
-			CallbackFunc: s.Signin,
-		},
+	// publicなhandler
+	publicGroup := s.r.Group(fmt.Sprintf("%s/public", configs.App.ApiPrefix))
+	{
+		publicGroup.POST("/signup", s.Signup)
+		publicGroup.GET("/mail_addr_auth", s.MailAddrAuth)
+		publicGroup.POST("/signin", s.Signin)
 	}
 
-	// set API callbacks
-	for apiName, apiMetaData := range callbacks {
-		apiPath := fmt.Sprintf("%s/%s", configs.App.ApiPrefix, apiName)
-		switch apiMetaData.Method {
-		case RestMethod_GET:
-			s.r.GET(apiPath, apiMetaData.CallbackFunc)
-		case RestMethod_POST:
-			s.r.POST(apiPath, apiMetaData.CallbackFunc)
-		}
+	// 適切なアクセストークンの使用でアクセス可能なhandler
+	authUserGroup := s.r.Group(fmt.Sprintf("%s/auth_user", configs.App.ApiPrefix))
+	authUserGroup.Use(
+		auth_utils.ValidateTokenMiddleware,
+	)
+	{
+		authUserGroup.POST("/get_user_info", s.GetUserInfo)
 	}
 
 	log.Println("gin callbacks is ready")

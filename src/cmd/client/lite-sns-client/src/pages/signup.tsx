@@ -40,6 +40,8 @@ export default function Signup() {
 
         // 入力値をサーバに送信。
         console.log("sending an email...")
+        const apiPath: string = `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/public/signup`
+        console.log(`api path: ${apiPath}`)
         const xmlHttpReq = new XMLHttpRequest()
         xmlHttpReq.onreadystatechange = function () {
             const READYSTATE_COMPLETED: number = 4
@@ -51,7 +53,7 @@ export default function Signup() {
                 console.log("sending email succeeded")
             }
         }
-        xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/signup`)
+        xmlHttpReq.open("POST", apiPath)
         xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
         xmlHttpReq.send(encodeHTMLForm({
             EmailAddr: emailAddress,

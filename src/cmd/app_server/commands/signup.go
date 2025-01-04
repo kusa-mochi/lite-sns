@@ -159,7 +159,7 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	log.Printf("ID = <not supported>, affected = %d", rowCnt)
 
 	// 認証用メールの本文を生成する。
-	body := fmt.Sprintf("access to the following link:\nhttp://%s:%v%s/mail_addr_auth?t=%s", configs.App.Ip, configs.App.Port, configs.App.ApiPrefix, tokenString)
+	body := fmt.Sprintf("access to the following link:\nhttp://%s:%v%s/public/mail_addr_auth?t=%s", configs.App.Ip, configs.App.Port, configs.App.ApiPrefix, tokenString)
 
 	// 認証用メールを送信する。
 	c.sendAuthMail(&configs.Smtp, c.EmailAddr, subj, body)
