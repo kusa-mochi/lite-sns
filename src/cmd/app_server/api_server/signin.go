@@ -72,7 +72,8 @@ func (s *ApiServer) Signin(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"result": result.Message,
-		"token":  result.TokenString,
+		"result":  result.Message,
+		"token":   result.TokenString,
+		"user_id": result.UserId,
 	})
 }
