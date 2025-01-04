@@ -2,13 +2,17 @@ package api_server
 
 import (
 	"fmt"
+	"lite-sns/m/src/cmd/app_server/commands"
 	"lite-sns/m/src/cmd/app_server/interfaces"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type ApiServer struct {
@@ -69,14 +73,59 @@ func (s *ApiServer) Run() {
 }
 
 func (s *ApiServer) ValidateTokenMiddleware(c *gin.Context) {
-	// TODO: HTTPヘッダからアクセストークンを取得する。
+	// HTTPヘッダからアクセストークンを取得する。
+	tokenString := c.GetHeader("Authorization")
+	if tokenString == "" {
+		log.Println("no access token")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
+		return
+	}
 
-	// TODO: HTTPヘッダからユーザーIDを取得する。
+	// HTTPヘッダからユーザーIDを取得する。
+	userIdString := c.GetHeader("X-User-Id")
+	userId, err := strconv.Atoi(userIdString)
+	if err != nil {
+		log.Println("failed to convert userIdString to int |", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
+		return
+	}
 
-	// TODO: ユーザーIDに対応する秘密鍵をDBから取得する。
-	// TODO: 処理の原子性確保・順序保証のためDB処理はcommandsパッケージで行う。
+	// ユーザーIDに対応する秘密鍵をDBから取得する。
+	// 処理は通常のコマンド処理と同様にメインゴルーチンで行う。
+	resCh := make(chan *commands.GetUserSecretKeyRes)
+	s.commandCh <- &commands.GetUserSecretKeyCommand{
+		UserId: userId,
+		ResCh:  resCh,
+	}
+	res := <-resCh
+	if res.Error != nil {
+		log.Println("failed to get a secret key corresponding to the user ID |", res.Error.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
+		return
+	}
 
-	// TODO: アクセストークンを検証する。
+	// アクセストークンを検証する。
+	_, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			log.Printf("unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("")
+		}
+
+		return []byte(res.SecretKey), nil
+	})
+	if err != nil {
+		log.Println("failed to parse a token |", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "bad request",
+		})
+		return
+	}
 
 	c.Next()
 }
