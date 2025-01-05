@@ -15,6 +15,7 @@ export function callAPI(
     data: any,
     userId: number,
     onSuccess: (response: any) => void,
+    onFailure?: (response: any) => void,
 ) {
     const xmlHttpReq = new XMLHttpRequest()
     xmlHttpReq.onreadystatechange = function () {
@@ -25,6 +26,10 @@ export function callAPI(
             this.status === HTTP_STATUS_OK
         ) {
             onSuccess(JSON.parse(this.response))
+        } else {
+            if (onFailure) {
+                onFailure(JSON.parse(this.response))
+            }
         }
     }
     xmlHttpReq.open(method, apiPath)
