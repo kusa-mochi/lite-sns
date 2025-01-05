@@ -2,7 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import Button from "../components/molecules/button"
 import { css } from "@emotion/css"
 import { useConfig } from "../providers/configProvider"
-import { encodeHTMLForm } from "../utils/api_utils"
+import { callAPI } from "../utils/api_utils"
 
 export default function Signin() {
     const config = useConfig()
@@ -52,32 +52,23 @@ export default function Signin() {
     function signin() {
         console.log("signing in...")
         const apiPath: string = `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/public/signin`
-        console.log(`api path: ${apiPath}`)
-        const xmlHttpReq = new XMLHttpRequest()
-        xmlHttpReq.onreadystatechange = function () {
-            const READYSTATE_COMPLETED: number = 4
-            const HTTP_STATUS_OK: number = 200
-            if (
-                this.readyState === READYSTATE_COMPLETED &&
-                this.status === HTTP_STATUS_OK
-            ) {
-                console.log("sign in succeeded")
-                
-                const res = JSON.parse(this.response)
-                console.log(`token:   ${res.token}`)      // APIサーバーが発行したアクセストークン
-                console.log(`user id: ${res.user_id}`)    // ユーザーID（固有の数値）
+        callAPI(
+            apiPath,
+            "POST",
+            {
+                EmailAddr: emailAddress,
+                Password: password,
+            },
+            -1,
+            (response: any) => {
+                console.log(`token:   ${response.token}`)      // APIサーバーが発行したアクセストークン
+                console.log(`user id: ${response.user_id}`)    // ユーザーID（固有の数値）
 
                 // TODO: アクセストークンとユーザーID（固有の数値）をコンテキストに保存し、任意のページで使えるようにする。
 
                 location.replace("/timeline")
             }
-        }
-        xmlHttpReq.open("POST", apiPath)
-        xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-        xmlHttpReq.send(encodeHTMLForm({
-            EmailAddr: emailAddress,
-            Password: password,
-        }))
+        )
     }
 
     useEffect(() => {
