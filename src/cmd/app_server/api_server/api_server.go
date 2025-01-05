@@ -37,7 +37,7 @@ func NewApiServer(
 			cors.Config{
 				AllowOrigins: []string{fmt.Sprintf("http://%s:%v", configs.Frontend.Ip, configs.Frontend.Port)}, // TODO: TLS対応
 				AllowMethods: []string{"GET", "POST"},
-				AllowHeaders: []string{"Origin"},
+				AllowHeaders: []string{"Origin", "X-User-Id"},
 				MaxAge:       24 * time.Hour,
 			},
 		),
