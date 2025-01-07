@@ -55,6 +55,7 @@ func NewApiServer(
 
 	// 適切なアクセストークンの使用でアクセス可能なhandler
 	authUserGroup := s.r.Group(fmt.Sprintf("%s/auth_user", configs.App.ApiPrefix))
+	// auth_userグループのAPIに適用する設定・ミドルウェア
 	authUserGroup.Use(
 		s.ValidateTokenMiddleware,
 	)
