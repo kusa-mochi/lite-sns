@@ -50,6 +50,7 @@ export default function Signup() {
                 Password: password,
             },
             -1,
+            null,
             (response: any) => {
                 console.log("sending email succeeded")
                 console.log(response.result)
