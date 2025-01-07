@@ -1,6 +1,6 @@
 import { createContext, Dispatch, ReactNode, useContext, useEffect, useState } from "react"
 
-type Auth = {
+export type Auth = {
     userId: number
     tokenString: string
 }
