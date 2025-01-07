@@ -19,6 +19,8 @@ type GetUserSecretKeyRes struct {
 }
 
 func (c *GetUserSecretKeyCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) {
+	log.Println("get user secret key exec")
+
 	selectData, err := db_utils.SelectFrom(
 		db,
 		[]string{"access_token_secret_key"},
