@@ -14,6 +14,7 @@ export function callAPI(
     method: string,
     data: any,
     userId: number,
+    accessToken: string | null,
     onSuccess: (response: any) => void,
     onFailure?: (response: any) => void,
 ) {
@@ -35,5 +36,6 @@ export function callAPI(
     xmlHttpReq.open(method, apiPath)
     xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
     xmlHttpReq.setRequestHeader("X-User-Id", userId.toString())
+    xmlHttpReq.setRequestHeader("Authorization", accessToken ?? "")
     xmlHttpReq.send(encodeHTMLForm(data))
 }
