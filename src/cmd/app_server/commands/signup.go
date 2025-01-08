@@ -101,6 +101,28 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		subj         string = "lite-sns email test"
 	)
 
+	// TODO: メールアドレスのドメインがブラックリストに含まれているものか確認する。
+
+	// メールアドレスが既に登録されているものか確認する。
+	selectData, err := db_utils.SelectFrom(
+		db,
+		[]string{"email_address"},
+		"sns_user",
+		"WHERE email_address = $1",
+		emailAddress,
+	)
+	if err != nil {
+		log.Println("an error occured when search a user data |", err.Error())
+		c.ResCh <- "internal server error"
+		return
+	}
+	// 既に登録されているメールアドレスの場合、エラーを返す。
+	if len(selectData) > 0 {
+		log.Println("the email address is already registered")
+		c.ResCh <- "already registered"
+		return
+	}
+
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
 	secretKey := auth_utils.GenerateHashString()
 
