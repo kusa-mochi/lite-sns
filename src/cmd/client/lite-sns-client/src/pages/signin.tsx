@@ -3,15 +3,22 @@ import Button from "../components/molecules/button"
 import { css } from "@emotion/css"
 import { useConfig } from "../providers/configProvider"
 import { callAPI } from "../utils/api_utils"
+import { Auth, setAuthType, useSetAuth } from "../providers/authProvider"
+import { redirect, useNavigate } from "react-router"
 
 export default function Signin() {
     const config = useConfig()
     const MAX_LENGTH_EMAILADDRESS: number = 254
     const MAX_LENGTH_PASSWORD: number = 128
 
+    const navigate = useNavigate()
+
     const [emailAddress, setEmailAddress] = useState("")
     const [password, setPassword] = useState("")
     const [isSigninEnabled, setIsSigninEnabled] = useState(false)
+
+    // アクセストークンとユーザーID（固有の数値）をコンテキストに保存し、任意のページで使えるようにするためのフック。
+    const setAuth = useSetAuth()
 
     function validateEmailAddress(): boolean {
         console.log("validating email address...")
@@ -60,13 +67,18 @@ export default function Signin() {
                 Password: password,
             },
             -1,
+            null,
             (response: any) => {
                 console.log(`token:   ${response.token}`)      // APIサーバーが発行したアクセストークン
                 console.log(`user id: ${response.user_id}`)    // ユーザーID（固有の数値）
 
-                // TODO: アクセストークンとユーザーID（固有の数値）をコンテキストに保存し、任意のページで使えるようにする。
+                const au: Auth = {
+                    userId: response.user_id,
+                    tokenString: response.token,
+                }
+                setAuth({ type: setAuthType, payload: au })
 
-                location.replace("/timeline")
+                navigate("/timeline")
             }
         )
     }
