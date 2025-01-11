@@ -8,13 +8,14 @@ import (
 	"log"
 )
 
+// アクセストークン検証を行うミドルウェアでの使用を想定したコマンド。
 type GetUserSecretKeyCommand struct {
 	UserId int
 	ResCh  chan<- *GetUserSecretKeyRes
 }
 
 type GetUserSecretKeyRes struct {
-	SecretKey string
+	SecretKey string // 重要：この情報はクライアントに渡したりクライアントからアクセスできる状態にはしないこと。
 	Error     error
 }
 
