@@ -11,6 +11,7 @@ export default function Timeline() {
     useEffect(() => {
         console.log(`tokenString: ${auth.tokenString}`)
         // APIサーバーからユーザー情報を取得する。
+        // TODO: この動作はあくまでデバッグ用。本来このページではタイムラインに表示する投稿の情報を取得する。
         callAPI(
             `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/auth_user/get_user_info`,
             "POST",
