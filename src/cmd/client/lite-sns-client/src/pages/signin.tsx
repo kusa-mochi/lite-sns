@@ -2,16 +2,23 @@ import { ChangeEvent, useEffect, useState } from "react"
 import Button from "../components/molecules/button"
 import { css } from "@emotion/css"
 import { useConfig } from "../providers/configProvider"
-import { encodeHTMLForm } from "../utils/api_utils"
+import { callAPI } from "../utils/api_utils"
+import { Auth, setAuthType, useSetAuth } from "../providers/authProvider"
+import { redirect, useNavigate } from "react-router"
 
 export default function Signin() {
     const config = useConfig()
     const MAX_LENGTH_EMAILADDRESS: number = 254
     const MAX_LENGTH_PASSWORD: number = 128
 
+    const navigate = useNavigate()
+
     const [emailAddress, setEmailAddress] = useState("")
     const [password, setPassword] = useState("")
     const [isSigninEnabled, setIsSigninEnabled] = useState(false)
+
+    // アクセストークンとユーザーID（固有の数値）をコンテキストに保存し、任意のページで使えるようにするためのフック。
+    const setAuth = useSetAuth()
 
     function validateEmailAddress(): boolean {
         console.log("validating email address...")
@@ -51,31 +58,29 @@ export default function Signin() {
 
     function signin() {
         console.log("signing in...")
+        const apiPath: string = `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/public/signin`
+        callAPI(
+            apiPath,
+            "POST",
+            {
+                EmailAddr: emailAddress,
+                Password: password,
+            },
+            -1,
+            null,
+            (response: any) => {
+                console.log(`token:   ${response.token}`)      // APIサーバーが発行したアクセストークン
+                console.log(`user id: ${response.user_id}`)    // ユーザーID（固有の数値）
 
-        const xmlHttpReq = new XMLHttpRequest()
-        xmlHttpReq.onreadystatechange = function () {
-            const READYSTATE_COMPLETED: number = 4
-            const HTTP_STATUS_OK: number = 200
-            if (
-                this.readyState === READYSTATE_COMPLETED &&
-                this.status === HTTP_STATUS_OK
-            ) {
-                console.log("sign in succeeded")
-                
-                const res = JSON.parse(this.response)
-                console.log(res.token)  // APIサーバーが発行したアクセストークン
+                const au: Auth = {
+                    userId: response.user_id,
+                    tokenString: response.token,
+                }
+                setAuth({ type: setAuthType, payload: au })
 
-                // TODO: アクセストークンをコンテキストに保存し、任意のページで使えるようにする。
-
-                location.replace("/timeline")
+                navigate("/timeline")
             }
-        }
-        xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/signin`)
-        xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-        xmlHttpReq.send(encodeHTMLForm({
-            EmailAddr: emailAddress,
-            Password: password,
-        }))
+        )
     }
 
     useEffect(() => {

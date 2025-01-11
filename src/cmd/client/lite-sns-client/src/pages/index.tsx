@@ -1,7 +1,9 @@
 import { css } from "@emotion/css";
 import Button from "../components/molecules/button";
+import { useNavigate } from "react-router";
 
 export default function Home() {
+    const navigate = useNavigate()
 
     const signupButtonContainerStyle = css`
         margin: 8px;
@@ -21,10 +23,10 @@ export default function Home() {
             </div>
             <div>
                 <div className={signupButtonContainerStyle}>
-                    <Button onClick={() => {location.replace("/signup")}}>Sign up</Button>
+                    <Button onClick={() => {navigate("/signup")}}>Sign up</Button>
                 </div>
                 <div className={signinButtonContainerStyle}>
-                    <Button onClick={() => {location.replace("/signin")}}>Sign in</Button>
+                    <Button onClick={() => {navigate("/signin")}}>Sign in</Button>
                 </div>
             </div>
         </>

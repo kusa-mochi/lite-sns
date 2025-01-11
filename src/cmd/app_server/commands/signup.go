@@ -101,6 +101,28 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		subj         string = "lite-sns email test"
 	)
 
+	// TODO: メールアドレスのドメインがブラックリストに含まれているものか確認する。
+
+	// メールアドレスが既に登録されているものか確認する。
+	selectData, err := db_utils.SelectFrom(
+		db,
+		[]string{"email_address"},
+		"sns_user",
+		"WHERE email_address = $1",
+		emailAddress,
+	)
+	if err != nil {
+		log.Println("an error occured when search a user data |", err.Error())
+		c.ResCh <- "internal server error"
+		return
+	}
+	// 既に登録されているメールアドレスの場合、エラーを返す。
+	if len(selectData) > 0 {
+		log.Println("the email address is already registered")
+		c.ResCh <- "already registered"
+		return
+	}
+
 	// このサインアップ処理でのみ有効な秘密鍵を生成する。
 	secretKey := auth_utils.GenerateHashString()
 
@@ -153,13 +175,13 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	)
 	if err != nil {
 		log.Println("failed to insert a data into signup_access_token")
-		c.ResCh <- "server internal error"
+		c.ResCh <- "internal server error"
 		return
 	}
 	log.Printf("ID = <not supported>, affected = %d", rowCnt)
 
 	// 認証用メールの本文を生成する。
-	body := fmt.Sprintf("access to the following link:\nhttp://%s:%v%s/mail_addr_auth?t=%s", configs.App.Ip, configs.App.Port, configs.App.ApiPrefix, tokenString)
+	body := fmt.Sprintf("access to the following link:\nhttp://%s:%v%s/public/mail_addr_auth?t=%s", configs.App.Ip, configs.App.Port, configs.App.ApiPrefix, tokenString)
 
 	// 認証用メールを送信する。
 	c.sendAuthMail(&configs.Smtp, c.EmailAddr, subj, body)

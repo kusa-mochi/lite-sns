@@ -53,25 +53,27 @@ func (s *ApiServer) Signin(c *gin.Context) {
 	result := <-resCh
 
 	if result.Error != nil {
-		switch result.Error.Error() {
+		errorMessage := result.Error.Error()
+		switch errorMessage {
 		case "invalid signin data":
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": result.Error.Error(),
+				"error": errorMessage,
 			})
 		case "internal server error":
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": result.Error.Error(),
+				"error": errorMessage,
 			})
 		default:
 			c.JSON(http.StatusServiceUnavailable, gin.H{
-				"error": result.Error.Error(),
+				"error": errorMessage,
 			})
 		}
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"result": result.Message,
-		"token":  result.TokenString,
+		"result":  result.Message,
+		"token":   result.TokenString,
+		"user_id": result.UserId,
 	})
 }

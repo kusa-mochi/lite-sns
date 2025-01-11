@@ -2,7 +2,7 @@ import { useState } from "react"
 import Button from "../components/molecules/button"
 import { useConfig } from "../providers/configProvider"
 import { css } from "@emotion/css"
-import { encodeHTMLForm } from "../utils/api_utils"
+import { callAPI } from "../utils/api_utils"
 
 enum InputError {
     None = 0,
@@ -40,24 +40,22 @@ export default function Signup() {
 
         // 入力値をサーバに送信。
         console.log("sending an email...")
-        const xmlHttpReq = new XMLHttpRequest()
-        xmlHttpReq.onreadystatechange = function () {
-            const READYSTATE_COMPLETED: number = 4
-            const HTTP_STATUS_OK: number = 200
-            if (
-                this.readyState === READYSTATE_COMPLETED &&
-                this.status === HTTP_STATUS_OK
-            ) {
+        const apiPath: string = `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/public/signup`
+        callAPI(
+            apiPath,
+            "POST",
+            {
+                EmailAddr: emailAddress,
+                Nickname: nickname,
+                Password: password,
+            },
+            -1,
+            null,
+            (response: any) => {
                 console.log("sending email succeeded")
-            }
-        }
-        xmlHttpReq.open("POST", `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/signup`)
-        xmlHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-        xmlHttpReq.send(encodeHTMLForm({
-            EmailAddr: emailAddress,
-            Nickname: nickname,
-            Password: password,
-        }))
+                console.log(response.result)
+            },
+        )
     }
 
     function validateNickname(): InputError {

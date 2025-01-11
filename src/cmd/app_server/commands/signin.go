@@ -21,6 +21,7 @@ type SigninCommand struct {
 type SigninRes struct {
 	Message     string
 	TokenString string
+	UserId      int64
 	Error       error
 }
 
@@ -35,7 +36,7 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	// DBのユーザーテーブルについて、メールアドレスが一致するレコードを検索・取得する。
 	selectData, err := db_utils.SelectFrom(
 		db,
-		[]string{"name", "icon_type", "icon_background_color", "password_hash"},
+		[]string{"id", "name", "icon_type", "icon_background_color", "password_hash"},
 		"sns_user",
 		"WHERE email_address = $1",
 		emailAddress,
@@ -46,6 +47,7 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		c.ResCh <- &SigninRes{
 			Message:     "",
 			TokenString: "",
+			UserId:      -1,
 			Error:       fmt.Errorf("invalid signin data"),
 		}
 		return
@@ -58,6 +60,7 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		c.ResCh <- &SigninRes{
 			Message:     "",
 			TokenString: "",
+			UserId:      -1,
 			Error:       fmt.Errorf("invalid signin data"),
 		}
 		return
@@ -73,6 +76,7 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		c.ResCh <- &SigninRes{
 			Message:     "",
 			TokenString: "",
+			UserId:      -1,
 			Error:       fmt.Errorf("invalid signin data"),
 		}
 		return
@@ -98,6 +102,7 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		c.ResCh <- &SigninRes{
 			Message:     "",
 			TokenString: "",
+			UserId:      -1,
 			Error:       fmt.Errorf("internal server error"),
 		}
 		return
@@ -116,6 +121,7 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 		c.ResCh <- &SigninRes{
 			Message:     "",
 			TokenString: "",
+			UserId:      -1,
 			Error:       fmt.Errorf("internal server error"),
 		}
 		return
@@ -126,6 +132,7 @@ func (c *SigninCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 	c.ResCh <- &SigninRes{
 		Message:     "signin fin",
 		TokenString: tokenString,
+		UserId:      signinData["id"].(int64),
 		Error:       nil,
 	}
 }
