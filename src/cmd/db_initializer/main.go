@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -140,13 +141,35 @@ func CreateTable(db *sql.DB, tableAttr *TableAttr) {
 }
 
 func AddTestRecords(db *sql.DB) {
-	// TODO
-	query := ""
-	stmt, err := db.Prepare(query)
-	if err != nil {
-		log.Fatalln(err)
+	// postテーブル
+	prepare := "INSERT INTO post(user_id, text, created_at, updated_at) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8), ($9, $10, $11, $12)"
+	datetime1, _ := time.Parse("2006-01-02 15:04:05", "2020-01-01 01:01:01")
+	datetime2, _ := time.Parse("2006-01-02 15:04:05", "2020-01-03 03:03:03")
+	datetime3, _ := time.Parse("2006-01-02 15:04:05", "2020-02-01 01:23:45")
+	datetime4, _ := time.Parse("2006-01-02 15:04:05", "2020-02-02 12:34:56")
+	datetime5, _ := time.Parse("2006-01-02 15:04:05", "2020-01-01 01:01:02")
+	datetime6, _ := time.Parse("2006-01-02 15:04:05", "2020-01-03 03:03:04")
+	params := []any{
+		1,
+		"結婚して23年ぐらい経ちます。\r\n今でも嫁さんが大好きですし、チューもします。\r\n子供もいっぱいいて、家も建て、子供達も高校生以上になりました。\r\n\r\n結婚して思うことは、男と女は違う生き物であるということ\r\n\r\n嫁さんからすれば、昔ほど旦那(^_^ワイ)のことは好きじゃない、むしろあまり近寄ってこられても困るかなという感じ\r\n\r\n一方で男は単純で、今でも大好き\r\n\r\nこうやって年月が経つと、付き合いたての頃と比べるとだいぶずれてくる\r\n\r\nそこで子供達の存在が大きい\r\n\r\n夫婦が子供達の為にできることに、一丸となって協力していく\r\n\r\n後三年もすれば、全員大学生以上\r\n\r\n次をどうするか？\r\nみなさんはどうですか？",
+		datetime1.Unix(),
+		datetime2.Unix(),
+		2,
+		"うちのプロポーズは、普通にハグしてるときに夫がポロッと「結婚してください…」って言ってくれて、私がびっくりしながら「うん🥹」って返事したら、泣き笑いながら「ちゃんと準備してプロポーズしたかったのに、気持ちが溢れてつい口に出ちゃった🥲」って感じだったから、花束もダイヤの指輪もなかったけど、間違いなく世界で一番幸せでしたよ",
+		datetime3.Unix(),
+		datetime4.Unix(),
+		1,
+		"旦那様へ\r\n\r\nまず、一言ありがとうございます。\r\n私が18歳の時に付き合い始め、25歳で結婚！それまで紆余曲折ありました。\r\nお金で苦労した事もあったけど、愚痴の1つもこぼさず、頑張って働いてるくれたおかげで子供達も立派に成人し、思いやりのある子に育ちました。\r\n貴方のおかげです。\r\nずっと貴方を支えます！ 幸せです ありがとう！\r\nそれしか言葉が出ません。",
+		datetime5.Unix(),
+		datetime6.Unix(),
 	}
-	defer stmt.Close()
+
+	stmt, _ := db.Prepare(prepare)
+	res, _ := stmt.Exec(params...)
+	_, err := res.RowsAffected()
+	if err != nil {
+		log.Fatalf("failed to get rows affected @ AddTestRecords | %s", err.Error())
+	}
 }
 
 func main() {
@@ -161,7 +184,7 @@ func main() {
 						{
 							Name:                "name",
 							Type:                ColType_CharacterVarying,
-							MaxLength:           20,
+							MaxLength:           80,
 							IsNullable:          false,
 							IsAutoIncrementable: false,
 						},
@@ -215,7 +238,7 @@ func main() {
 						{
 							Name:                "text",
 							Type:                ColType_CharacterVarying,
-							MaxLength:           1000,
+							MaxLength:           4000,
 							IsNullable:          true,
 							IsAutoIncrementable: false,
 						},
@@ -248,7 +271,7 @@ func main() {
 						{
 							Name:                "text",
 							Type:                ColType_CharacterVarying,
-							MaxLength:           1000,
+							MaxLength:           2000,
 							IsNullable:          true,
 							IsAutoIncrementable: false,
 						},
@@ -486,7 +509,7 @@ func main() {
 						{
 							Name:                "nickname",
 							Type:                ColType_CharacterVarying,
-							MaxLength:           20,
+							MaxLength:           80,
 							IsNullable:          false,
 							IsAutoIncrementable: false,
 						},
@@ -545,6 +568,6 @@ func main() {
 		CreateTable(db, &tableAttr)
 	}
 
-	// // デバッグ上必要なら、以下のコードでテスト用レコードを各テーブルに追加する。
-	// AddTestRecords()
+	// 以下、テスト用レコードの追加。
+	AddTestRecords(db)
 }
