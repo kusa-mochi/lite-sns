@@ -141,28 +141,44 @@ func CreateTable(db *sql.DB, tableAttr *TableAttr) {
 }
 
 func AddTestRecords(db *sql.DB) {
-	// postテーブル
-	prepare := "INSERT INTO post(user_id, text, created_at, updated_at) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8), ($9, $10, $11, $12)"
-	params := []any{
-		1,
-		"結婚して23年ぐらい経ちます。\r\n今でも嫁さんが大好きですし、チューもします。\r\n子供もいっぱいいて、家も建て、子供達も高校生以上になりました。\r\n\r\n結婚して思うことは、男と女は違う生き物であるということ\r\n\r\n嫁さんからすれば、昔ほど旦那(^_^ワイ)のことは好きじゃない、むしろあまり近寄ってこられても困るかなという感じ\r\n\r\n一方で男は単純で、今でも大好き\r\n\r\nこうやって年月が経つと、付き合いたての頃と比べるとだいぶずれてくる\r\n\r\nそこで子供達の存在が大きい\r\n\r\n夫婦が子供達の為にできることに、一丸となって協力していく\r\n\r\n後三年もすれば、全員大学生以上\r\n\r\n次をどうするか？\r\nみなさんはどうですか？",
-		time.Date(2020, 1, 1, 1, 1, 1, 0, time.UTC).Unix(),
-		time.Date(2020, 1, 3, 3, 3, 3, 0, time.UTC).Unix(),
-		2,
-		"うちのプロポーズは、普通にハグしてるときに夫がポロッと「結婚してください…」って言ってくれて、私がびっくりしながら「うん🥹」って返事したら、泣き笑いながら「ちゃんと準備してプロポーズしたかったのに、気持ちが溢れてつい口に出ちゃった🥲」って感じだったから、花束もダイヤの指輪もなかったけど、間違いなく世界で一番幸せでしたよ",
-		time.Date(2020, 2, 1, 1, 23, 45, 0, time.UTC).Unix(),
-		time.Date(2020, 2, 2, 12, 34, 56, 0, time.UTC).Unix(),
-		1,
-		"旦那様へ\r\n\r\nまず、一言ありがとうございます。\r\n私が18歳の時に付き合い始め、25歳で結婚！それまで紆余曲折ありました。\r\nお金で苦労した事もあったけど、愚痴の1つもこぼさず、頑張って働いてるくれたおかげで子供達も立派に成人し、思いやりのある子に育ちました。\r\n貴方のおかげです。\r\nずっと貴方を支えます！ 幸せです ありがとう！\r\nそれしか言葉が出ません。",
-		time.Date(2020, 1, 1, 1, 1, 2, 0, time.UTC).Unix(),
-		time.Date(2020, 1, 3, 3, 3, 4, 0, time.UTC).Unix(),
-	}
+	const (
+		prepare string = "INSERT INTO post(user_id, text, created_at, updated_at) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8), ($9, $10, $11, $12)"
+	)
 
-	stmt, _ := db.Prepare(prepare)
-	res, _ := stmt.Exec(params...)
-	_, err := res.RowsAffected()
-	if err != nil {
-		log.Fatalf("failed to get rows affected @ AddTestRecords | %s", err.Error())
+	var (
+		datetime0 time.Time = time.Date(2020, 1, 1, 1, 1, 1, 0, time.UTC)
+		datetime1 time.Time = time.Date(2021, 2, 2, 2, 2, 2, 0, time.UTC)
+		datetime2 time.Time = time.Date(2022, 3, 3, 3, 3, 3, 0, time.UTC)
+	)
+
+	for i := 0; i < 100; i++ {
+		params := []any{}
+
+		params = append(params, 1)
+		params = append(params, "結婚して23年ぐらい経ちます。\r\n今でも嫁さんが大好きですし、チューもします。\r\n子供もいっぱいいて、家も建て、子供達も高校生以上になりました。\r\n\r\n結婚して思うことは、男と女は違う生き物であるということ\r\n\r\n嫁さんからすれば、昔ほど旦那(^_^ワイ)のことは好きじゃない、むしろあまり近寄ってこられても困るかなという感じ\r\n\r\n一方で男は単純で、今でも大好き\r\n\r\nこうやって年月が経つと、付き合いたての頃と比べるとだいぶずれてくる\r\n\r\nそこで子供達の存在が大きい\r\n\r\n夫婦が子供達の為にできることに、一丸となって協力していく\r\n\r\n後三年もすれば、全員大学生以上\r\n\r\n次をどうするか？\r\nみなさんはどうですか？")
+		params = append(params, datetime0.Unix())
+		params = append(params, datetime0.Add(1*time.Hour).Unix())
+
+		params = append(params, 2)
+		params = append(params, "うちのプロポーズは、普通にハグしてるときに夫がポロッと「結婚してください…」って言ってくれて、私がびっくりしながら「うん🥹」って返事したら、泣き笑いながら「ちゃんと準備してプロポーズしたかったのに、気持ちが溢れてつい口に出ちゃった🥲」って感じだったから、花束もダイヤの指輪もなかったけど、間違いなく世界で一番幸せでしたよ")
+		params = append(params, datetime1.Unix())
+		params = append(params, datetime1.Add(1*time.Hour).Unix())
+
+		params = append(params, 1)
+		params = append(params, "旦那様へ\r\n\r\nまず、一言ありがとうございます。\r\n私が18歳の時に付き合い始め、25歳で結婚！それまで紆余曲折ありました。\r\nお金で苦労した事もあったけど、愚痴の1つもこぼさず、頑張って働いてるくれたおかげで子供達も立派に成人し、思いやりのある子に育ちました。\r\n貴方のおかげです。\r\nずっと貴方を支えます！ 幸せです ありがとう！\r\nそれしか言葉が出ません。")
+		params = append(params, datetime2.Unix())
+		params = append(params, datetime2.Add(1*time.Hour).Unix())
+
+		stmt, _ := db.Prepare(prepare)
+		res, _ := stmt.Exec(params...)
+		_, err := res.RowsAffected()
+		if err != nil {
+			log.Fatalf("failed to get rows affected @ AddTestRecords i==%v | %s", i, err.Error())
+		}
+
+		datetime0 = datetime0.Add(12 * time.Hour)
+		datetime1 = datetime1.Add(12 * time.Hour)
+		datetime2 = datetime2.Add(12 * time.Hour)
 	}
 }
 
