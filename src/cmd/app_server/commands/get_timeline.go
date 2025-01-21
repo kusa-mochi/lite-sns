@@ -63,26 +63,6 @@ func (c *GetTimelineCommand) Exec(configs *server_configs.ServerConfigs, db *sql
 			GoodCount: 0, // TODO: DBから値を取得する。
 		})
 	}
-	// selectData, err := db_utils.SelectFrom(
-	// 	db,
-	// 	[]string{"name", "icon_type", "icon_background_color"},
-	// 	"post",
-	// 	"WHERE id = $1",
-	// 	c.UserId,
-	// )
-	// if err != nil {
-	// 	// 何もせずコマンド終了。
-	// 	log.Printf("failed to get a user info corresponding to the user ID (ID=%v) from DB | %s", c.UserId, err.Error())
-	// 	c.ResCh <- &GetTimelineRes{
-	// 		Username:            "",
-	// 		IconType:            "",
-	// 		IconBackgroundColor: "",
-	// 		Error:               fmt.Errorf("bad request"),
-	// 	}
-	// 	return
-	// }
-
-	// userInfo := selectData[0]
 
 	c.ResCh <- &GetTimelineRes{
 		Timeline: timeline,
