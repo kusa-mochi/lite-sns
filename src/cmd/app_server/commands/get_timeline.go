@@ -35,7 +35,7 @@ func (c *GetTimelineCommand) Exec(configs *server_configs.ServerConfigs, db *sql
 		db,
 		"SELECT id, user_id, text, created_at, updated_at FROM post WHERE id < $1 ORDER BY id DESC LIMIT $2",
 		c.CurrentOldestPostId,
-		10, // TODO: 設定ファイルで設定するようにする。
+		configs.App.TimelinePostNumber,
 	)
 	if err != nil {
 		// 何もせずコマンド終了。
