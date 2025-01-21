@@ -61,6 +61,7 @@ func NewApiServer(
 	)
 	{
 		authUserGroup.POST("/get_user_info", s.GetUserInfo)
+		authUserGroup.GET("/get_timeline", s.GetTimeline)
 	}
 
 	log.Println("gin callbacks is ready")
