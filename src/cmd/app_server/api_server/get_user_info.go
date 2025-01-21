@@ -21,7 +21,6 @@ func (s *ApiServer) GetUserInfo(c *gin.Context) {
 		})
 		return
 	}
-
 	if userId < 0 {
 		log.Printf("invalid user ID (ID=%v)", userId)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -36,6 +35,13 @@ func (s *ApiServer) GetUserInfo(c *gin.Context) {
 		ResCh:  resCh,
 	}
 	result := <-resCh
+	if result.Error != nil {
+		log.Printf("failed to get user info | %s", result.Error.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "internal server error",
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":               "GetUserInfo fin",
