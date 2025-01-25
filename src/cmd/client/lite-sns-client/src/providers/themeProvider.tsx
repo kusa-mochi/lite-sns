@@ -22,6 +22,12 @@ type Theme = {
     palette: {
         primary: PaletteTheme
         secondary: PaletteTheme
+        base: {
+            bodyBackgroundColor: string
+            backgroundColor: string
+            cardColor: string
+            borderColor: string
+        }
     }
     typography: {
         fontFamily: string
@@ -79,6 +85,12 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
                     outlineColor: '#4abd9a',
                 },
+                base: {
+                    backgroundColor: '#ffffff',
+                    bodyBackgroundColor: '#fafafc',
+                    cardColor: '#ffffff',
+                    borderColor: '#bbbbbb',
+                }
             },
             typography: {
                 fontFamily: 'Arial, sans-serif',
@@ -112,6 +124,12 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
                     fontColor: 'rgba(0%, 0%, 0%, 0.87)',
                     outlineColor: '#4abd9a',
                 },
+                base: {
+                    backgroundColor: '#ffffff',
+                    bodyBackgroundColor: '#fafafc',
+                    cardColor: '#f0f1fa',
+                    borderColor: '#999999',
+                }
             },
             typography: {
                 fontFamily: 'Arial, sans-serif',
