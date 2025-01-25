@@ -3,6 +3,7 @@ import { callAPI } from "../utils/api_utils"
 import { useConfig } from "../providers/configProvider"
 import { useAuth } from "../providers/authProvider"
 import Card from "../components/atoms/card"
+import { css } from "@emotion/css"
 
 export default function Timeline() {
     const config = useConfig()
@@ -40,8 +41,22 @@ export default function Timeline() {
         )
     }, [auth])
 
+    const pageStyle = css`
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        &::webkit-scrollbar {
+            display: none;
+        }
+    `
+
     return (
-        <>
+        <div className={pageStyle}>
             <div>{username}&nbsp;としてサインインしています。</div>
             {
                 posts.map((post: any) => {
@@ -56,6 +71,6 @@ export default function Timeline() {
                     )
                 })
             }
-        </>
+        </div>
     )
 }
