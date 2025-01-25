@@ -132,7 +132,7 @@ export default function Signin() {
                 </div>
             </div>
             <Button disabled={!isSigninEnabled} onClick={() => signin()}>サインイン</Button>
-            <p>Go to <a href="/test2">Test2 Page</a></p>
+            {/* <p>Go to <a href="/test2">Test2 Page</a></p> */}
         </Card>
     )
 }
