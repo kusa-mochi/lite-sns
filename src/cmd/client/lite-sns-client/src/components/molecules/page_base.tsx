@@ -32,6 +32,8 @@ export default function PageBase(props: Props) {
         width: 600px;
         height: 100%;
         background-color: ${theme.palette.base.bodyBackgroundColor};
+        border-right: 1px solid ${theme.palette.base.borderColor};
+        border-left: 1px solid ${theme.palette.base.borderColor};
     `
 
     return (
