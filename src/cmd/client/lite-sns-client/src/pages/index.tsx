@@ -52,9 +52,9 @@ export default function Home() {
     return (
         <div className={appRootStyle}>
             <div className={appBodyStyle}>
-                <div>
+                {/* <div>
                     Go to <a href="/test">Test Page</a>
-                </div>
+                </div> */}
                 <div>
                     Lite SNS
                 </div>
