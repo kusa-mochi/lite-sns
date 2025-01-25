@@ -29,6 +29,7 @@ type GetTimelineRes struct {
 
 func (c *GetTimelineCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) {
 	log.Println("get timeline exec")
+	log.Println("db command params:", c.CurrentOldestPostId, configs.App.TimelinePostNumber)
 
 	// ユーザー以外の投稿をDBから取得する。
 	selectData, err := db_utils.Query(
