@@ -55,6 +55,7 @@ func (c *GetTimelineCommand) Exec(configs *server_configs.ServerConfigs, db *sql
 		postText := postData[2].(string)
 		createdAt := postData[3].(int64)
 		updatedAt := postData[4].(int64)
+
 		timeline = append(timeline, TimelineItem{
 			PostId:    postId,
 			UserId:    userId,
