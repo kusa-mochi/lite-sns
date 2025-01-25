@@ -11,6 +11,15 @@ import (
 
 func (s *ApiServer) GetTimeline(c *gin.Context) {
 	log.Println("server GetTimeline start")
+	currentOldestPostIdStr := c.Query("current_oldest_post_id")
+	currentOldestPostId, err := strconv.Atoi(currentOldestPostIdStr)
+	if err != nil {
+		log.Printf("failed to convert the current oldest post ID string (%s) to int | %s", currentOldestPostIdStr, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "bad request",
+		})
+		return
+	}
 
 	var userIdStr string = c.GetHeader("X-User-Id")
 	userId, err := strconv.Atoi(userIdStr)
@@ -32,7 +41,7 @@ func (s *ApiServer) GetTimeline(c *gin.Context) {
 	resCh := make(chan *commands.GetTimelineRes)
 	s.commandCh <- &commands.GetTimelineCommand{
 		UserId:              userId,
-		CurrentOldestPostId: 0,
+		CurrentOldestPostId: currentOldestPostId,
 		ResCh:               resCh,
 	}
 	result := <-resCh
