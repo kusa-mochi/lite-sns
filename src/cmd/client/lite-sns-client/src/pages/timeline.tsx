@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { callAPI } from "../utils/api_utils"
 import { useConfig } from "../providers/configProvider"
 import { useAuth } from "../providers/authProvider"
+import Card from "../components/atoms/card"
 
 export default function Timeline() {
     const config = useConfig()
@@ -41,22 +42,20 @@ export default function Timeline() {
 
     return (
         <>
-            <div>
-                <div>{username}&nbsp;としてサインインしています。</div>
-                {
-                    posts.map((post: any) => {
-                        return (
-                            <div key={post.PostId}>
-                                <div>{post.PostId}</div>
-                                <div>{post.UserId}</div>
-                                <div>{post.CreatedAt}</div>
-                                <div>{post.UpdatedAt}</div>
-                                <div>{post.PostText}</div>
-                            </div>
-                        )
-                    })
-                }
-            </div>
+            <div>{username}&nbsp;としてサインインしています。</div>
+            {
+                posts.map((post: any) => {
+                    return (
+                        <Card key={post.PostId}>
+                            <div>{post.PostId}</div>
+                            <div>{post.UserId}</div>
+                            <div>{post.CreatedAt}</div>
+                            <div>{post.UpdatedAt}</div>
+                            <div>{post.PostText}</div>
+                        </Card>
+                    )
+                })
+            }
         </>
     )
 }
