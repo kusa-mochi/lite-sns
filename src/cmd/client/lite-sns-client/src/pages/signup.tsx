@@ -3,6 +3,7 @@ import Button from "../components/molecules/button"
 import { useConfig } from "../providers/configProvider"
 import { css } from "@emotion/css"
 import { callAPI } from "../utils/api_utils"
+import Card from "../components/atoms/card"
 
 enum InputError {
     None = 0,
@@ -183,7 +184,7 @@ export default function Signup() {
     `
 
     return (
-        <>
+        <Card topBorder>
             <div className={formStyle}>
                 <div className={labelStyle}>
                     <span className={requireStyle}>*</span>ニックネーム
@@ -242,6 +243,6 @@ export default function Signup() {
                 </div>
             </div>
             <Button onClick={() => sendEmail()}>認証メールを送信する</Button>
-        </>
+        </Card>
     )
 }

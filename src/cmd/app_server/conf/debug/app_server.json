@@ -6,7 +6,8 @@
             "<domain2>"
         ],
         "ip": "<ip>",
-        "port": 12345
+        "port": 12345,
+        "timeline_post_number": 12345
     },
     "db": {
         "hostname": "<hostname>",

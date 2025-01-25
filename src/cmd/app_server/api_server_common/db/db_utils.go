@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 )
 
 type KeyValuePair struct {
@@ -193,4 +194,50 @@ func PrepareAndExec(db *sql.DB, prepare string, params ...any) (int64, error) {
 	}
 
 	return rowCnt, nil
+}
+
+func Query(db *sql.DB, query string, params ...any) ([][]any, error) {
+	rows, err := db.Query(query, params...)
+	if err != nil {
+		if rows != nil {
+			rows.Close()
+		}
+		return nil, fmt.Errorf("failed to run query @ Query | %s", err.Error())
+	}
+
+	log.Println("query done")
+
+	ret := make([][]any, 0)
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get columns @ Query | %s", err.Error())
+	}
+
+	nCols := len(cols)
+	buf := make([]any, nCols)
+	pBuf := make([]any, nCols)
+	for i := 0; i < nCols; i++ {
+		pBuf[i] = &buf[i]
+	}
+
+	for rows.Next() {
+		err := rows.Scan(pBuf...)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan returned records @ Query | %s", err.Error())
+		}
+
+		row := make([]any, nCols)
+		copy(row, buf)
+		ret = append(ret, row)
+	}
+
+	return ret, nil
+}
+
+// UnixTimeToString: Unix時間を文字列に変換する。
+// Unix時間は秒単位で表現される。
+// 戻り値: "2006-01-02 15:04:05"形式の文字列。
+func UnixTimeToString(unixTime int64) string {
+	t := time.Unix(unixTime, 0)
+	return t.Format("2006-01-02 15:04:05")
 }

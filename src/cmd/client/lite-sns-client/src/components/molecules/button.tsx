@@ -8,12 +8,14 @@ type Props = {
     disabled?: boolean
     primary?: boolean
     secondary?: boolean
+    width?: string
+    height?: string
     onClick?: (e: MouseEvent) => void
 }
 
 export default function Button (props: Props) {
     const theme = useTheme()
-    const { children, active, disabled, primary, secondary, onClick } = props
+    const { children, active, disabled, primary, secondary, width, height, onClick } = props
     const [activeState, setActiveState] = useState(false)
     const [bgColor, setBgColor] = useState(theme.palette.secondary.main)
     const [fColor, setFColor] = useState(theme.palette.secondary.fontColor)
@@ -56,6 +58,8 @@ export default function Button (props: Props) {
         box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
         border: none;
         border-radius: 0;
+        ${width === undefined ? "" : `width: ${width};`}
+        ${height === undefined ? "" : `height: ${height};`}
         font-size: ${fSize}rem;
         padding: ${fSize/3}rem;
         cursor: ${disabled === true ? "default" : "pointer"};

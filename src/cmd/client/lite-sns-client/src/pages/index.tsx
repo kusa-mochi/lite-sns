@@ -1,9 +1,19 @@
 import { css } from "@emotion/css";
 import Button from "../components/molecules/button";
 import { useNavigate } from "react-router";
+import Card from "../components/atoms/card";
 
 export default function Home() {
     const navigate = useNavigate()
+
+    const actionAreaStyle = css`
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+    `
 
     const signupButtonContainerStyle = css`
         margin: 8px;
@@ -15,20 +25,22 @@ export default function Home() {
 
     return (
         <>
-            <div>
-                TBD: The promotion page will be here :)
-            </div>
-            <div>
+            {/* <div>
                 Go to <a href="/test">Test Page</a>
-            </div>
+            </div> */}
             <div>
-                <div className={signupButtonContainerStyle}>
-                    <Button onClick={() => {navigate("/signup")}}>Sign up</Button>
-                </div>
-                <div className={signinButtonContainerStyle}>
-                    <Button onClick={() => {navigate("/signin")}}>Sign in</Button>
-                </div>
+                Lite SNS
             </div>
+            <Card topBorder>
+                <div className={actionAreaStyle}>
+                    <div className={signupButtonContainerStyle}>
+                        <Button onClick={() => {navigate("/signup")}} width="80px">Sign up</Button>
+                    </div>
+                    <div className={signinButtonContainerStyle}>
+                        <Button onClick={() => {navigate("/signin")}} width="80px">Sign in</Button>
+                    </div>
+                </div>
+            </Card>
         </>
     )
 }
