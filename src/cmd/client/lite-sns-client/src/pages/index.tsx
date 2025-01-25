@@ -32,8 +32,13 @@ export default function Home() {
         background-color: ${theme.palette.base.bodyBackgroundColor};
     `
 
-    const cardStyle = css`
-        width: 100%;
+    const actionAreaStyle = css`
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
     `
 
     const signupButtonContainerStyle = css`
@@ -48,17 +53,19 @@ export default function Home() {
         <div className={appRootStyle}>
             <div className={appBodyStyle}>
                 <div>
-                    TBD: The promotion page will be here :)
-                </div>
-                <div>
                     Go to <a href="/test">Test Page</a>
                 </div>
+                <div>
+                    Lite SNS
+                </div>
                 <Card topBorder>
-                    <div className={signupButtonContainerStyle}>
-                        <Button onClick={() => {navigate("/signup")}}>Sign up</Button>
-                    </div>
-                    <div className={signinButtonContainerStyle}>
-                        <Button onClick={() => {navigate("/signin")}}>Sign in</Button>
+                    <div className={actionAreaStyle}>
+                        <div className={signupButtonContainerStyle}>
+                            <Button onClick={() => {navigate("/signup")}} width="80px">Sign up</Button>
+                        </div>
+                        <div className={signinButtonContainerStyle}>
+                            <Button onClick={() => {navigate("/signin")}} width="80px">Sign in</Button>
+                        </div>
                     </div>
                 </Card>
             </div>
