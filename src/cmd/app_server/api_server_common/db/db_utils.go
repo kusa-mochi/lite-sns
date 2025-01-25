@@ -226,7 +226,9 @@ func Query(db *sql.DB, query string, params ...any) ([][]any, error) {
 			return nil, fmt.Errorf("failed to scan returned records @ Query | %s", err.Error())
 		}
 
-		ret = append(ret, buf)
+		row := make([]any, nCols)
+		copy(row, buf)
+		ret = append(ret, row)
 	}
 
 	return ret, nil
