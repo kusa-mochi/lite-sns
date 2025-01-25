@@ -55,6 +55,11 @@ export default function Timeline() {
         }
     `
 
+    const timelineEndStyle = css`
+        width: 100%;
+        margin: 16px 0;
+    `
+
     return (
         <div className={pageStyle}>
             <div>{username}&nbsp;としてサインインしています。</div>
@@ -73,6 +78,7 @@ export default function Timeline() {
                     )
                 })
             }
+            <div className={timelineEndStyle}></div>
         </div>
     )
 }
