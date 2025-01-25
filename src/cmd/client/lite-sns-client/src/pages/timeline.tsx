@@ -7,6 +7,7 @@ export default function Timeline() {
     const config = useConfig()
     const auth = useAuth()  // ユーザーIDなどの情報
     const [username, setUsername] = useState("")
+    const [posts, setPosts] = useState([])
 
     useEffect(() => {
         console.log(`tokenString: ${auth.tokenString}`)
@@ -23,12 +24,39 @@ export default function Timeline() {
                 setUsername(response.username)
             },
         )
+
+        // TODO: APIサーバーからタイムラインに表示する投稿の情報を取得する。
+        callAPI(
+            `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/auth_user/get_timeline?current_oldest_post_id=${50}`,
+            "GET",
+            {},
+            auth.userId,
+            auth.tokenString,
+            (response: any) => {
+                console.log(response)
+                setPosts(() => response.timeline)
+            },
+        )
     }, [auth])
 
     return (
         <>
-            <h2>タイムライン</h2>
-            <div>{username}&nbsp;としてサインインしています。</div>
+            <div>
+                <div>{username}&nbsp;としてサインインしています。</div>
+                {
+                    posts.map((post: any) => {
+                        return (
+                            <div key={post.PostId}>
+                                <div>{post.PostId}</div>
+                                <div>{post.UserId}</div>
+                                <div>{post.CreatedAt}</div>
+                                <div>{post.UpdatedAt}</div>
+                                <div>{post.PostText}</div>
+                            </div>
+                        )
+                    })
+                }
+            </div>
         </>
     )
 }
