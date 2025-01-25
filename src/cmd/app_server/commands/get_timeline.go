@@ -14,8 +14,8 @@ type GetTimelineCommand struct {
 }
 
 type TimelineItem struct {
-	PostId    int
-	UserId    int
+	PostId    int64
+	UserId    int64
 	CreatedAt string
 	UpdatedAt string
 	PostText  string
@@ -49,8 +49,8 @@ func (c *GetTimelineCommand) Exec(configs *server_configs.ServerConfigs, db *sql
 
 	timeline := make([]TimelineItem, 0, len(selectData))
 	for _, postData := range selectData {
-		postId := postData[0].(int)
-		userId := postData[1].(int)
+		postId := postData[0].(int64)
+		userId := postData[1].(int64)
 		postText := postData[2].(string)
 		createdAt := postData[3].(int64)
 		updatedAt := postData[4].(int64)
