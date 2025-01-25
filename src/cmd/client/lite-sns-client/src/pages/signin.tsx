@@ -4,7 +4,8 @@ import { css } from "@emotion/css"
 import { useConfig } from "../providers/configProvider"
 import { callAPI } from "../utils/api_utils"
 import { Auth, setAuthType, useSetAuth } from "../providers/authProvider"
-import { redirect, useNavigate } from "react-router"
+import { useNavigate } from "react-router"
+import Card from "../components/atoms/card"
 
 export default function Signin() {
     const config = useConfig()
@@ -102,7 +103,7 @@ export default function Signin() {
     `
 
     return (
-        <>
+        <Card topBorder>
             <div className={formStyle}>
                 <div className={labelStyle}>
                     <span className={requireStyle}>*</span>メールアドレス
@@ -132,6 +133,6 @@ export default function Signin() {
             </div>
             <Button disabled={!isSigninEnabled} onClick={() => signin()}>サインイン</Button>
             <p>Go to <a href="/test2">Test2 Page</a></p>
-        </>
+        </Card>
     )
 }
