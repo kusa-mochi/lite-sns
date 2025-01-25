@@ -64,6 +64,8 @@ export default function Timeline() {
                         <Card key={post.PostId}>
                             <div>{post.PostId}</div>
                             <div>{post.UserId}</div>
+                            <div>{post.UserName}</div>
+                            <div>{post.UserIconBg}</div>
                             <div>{post.CreatedAt}</div>
                             <div>{post.UpdatedAt}</div>
                             <div>{post.PostText}</div>
