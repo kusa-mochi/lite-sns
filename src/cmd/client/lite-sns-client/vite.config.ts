@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import Pages from "vite-plugin-pages"
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import Pages from "vite-plugin-pages";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -9,14 +9,14 @@ export default defineConfig({
     Pages({
       dirs: [
         // basic
-        { dir: 'src/pages', baseRoute: '' },
+        { dir: "src/pages", baseRoute: "" },
         // admin pages
-        { dir: 'src/admin/pages', baseRoute: 'admin' },
+        { dir: "src/admin/pages", baseRoute: "admin" },
       ],
     }),
   ],
   server: {
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     port: 12380,
   },
-})
+});
