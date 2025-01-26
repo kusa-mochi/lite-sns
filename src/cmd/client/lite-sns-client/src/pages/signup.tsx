@@ -4,6 +4,7 @@ import { useConfig } from "../providers/configProvider";
 import { css } from "@emotion/css";
 import { callAPI } from "../utils/api_utils";
 import Card from "../components/atoms/card";
+import Modal from "../components/molecules/modal";
 
 enum InputError {
   None = 0,
@@ -248,6 +249,15 @@ export default function Signup() {
         </div>
         <Button onClick={() => sendEmail()}>認証メールを送信する</Button>
       </Card>
+      <Modal isOpen>
+        <div>
+          <p>認証メールを送信しました。</p>
+          <p>
+            3分以内にメール記載のリンクをクリックし、メール認証を完了させてください。
+          </p>
+          <p>このページは閉じてかまいません。</p>
+        </div>
+      </Modal>
     </>
   );
 }
