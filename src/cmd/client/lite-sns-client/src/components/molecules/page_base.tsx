@@ -29,11 +29,15 @@ export default function PageBase(props: Props) {
         align-items: center;
         justify-content: center;
 
-        width: 600px;
+        width: 100%;
         height: 100%;
         background-color: ${theme.palette.base.bodyBackgroundColor};
         border-right: 1px solid ${theme.palette.base.borderColor};
         border-left: 1px solid ${theme.palette.base.borderColor};
+
+        @media screen and (min-width: 800px) {
+            width: 600px;
+        }
     `
 
     return (

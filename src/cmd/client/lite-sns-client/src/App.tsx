@@ -1,8 +1,8 @@
-import { Suspense } from 'react'
-import './App.css'
-import { useRoutes } from 'react-router'
-import routes from '~react-pages'
-import PageBase from './components/molecules/page_base'
+import { Suspense } from "react";
+import "./App.css";
+import { useRoutes } from "react-router";
+import routes from "~react-pages";
+import PageBase from "./components/molecules/page_base";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -30,12 +30,10 @@ function App() {
         <p className="read-the-docs">
           Click on the Vite and React logos to learn more
         </p> */}
-        <PageBase>
-          {useRoutes(routes)}
-        </PageBase>
+        <PageBase>{useRoutes(routes)}</PageBase>
       </Suspense>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
