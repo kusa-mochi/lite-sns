@@ -17,6 +17,14 @@ enum InputError {
   ConfirmationNotMatched,
 }
 
+enum SignupState {
+  Input = 0,
+  SendingEmail,
+  SendedEmail,
+  AlreadyRegistered,
+  FailedToSendEmail,
+}
+
 export default function Signup() {
   const config = useConfig();
   const theme = useTheme();
@@ -38,6 +46,8 @@ export default function Signup() {
   const [isPasswordConfirmInvalid, setIsPasswordConfirmInvalid] =
     useState(false);
 
+  const [signupState, setSignupState] = useState(SignupState.Input);
+
   function sendEmail() {
     // 入力値チェック
     const hasInputError: boolean = !validateInputs();
@@ -46,6 +56,10 @@ export default function Signup() {
     // 入力値をサーバに送信。
     console.log("sending an email...");
     const apiPath: string = `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix}/public/signup`;
+
+    // 「認証メール送信中」メッセージを表示する。
+    setSignupState(SignupState.SendingEmail);
+
     callAPI(
       apiPath,
       "POST",
@@ -59,6 +73,22 @@ export default function Signup() {
       (response: any) => {
         console.log("sending email succeeded");
         console.log(response.result);
+
+        // TODO: メール送信の成功／失敗をメッセージに表示する。
+        switch (response.result) {
+          case "signup fin": // 成功
+            setSignupState(SignupState.SendedEmail);
+            break;
+          case "already registered":
+            setSignupState(SignupState.AlreadyRegistered);
+            break;
+          case "internal server error":
+            setSignupState(SignupState.FailedToSendEmail);
+            break;
+          default:
+            setSignupState(SignupState.FailedToSendEmail);
+            break;
+        }
       }
     );
   }
@@ -169,6 +199,10 @@ export default function Signup() {
     );
   }
 
+  function closePopup() {
+    setSignupState(SignupState.Input);
+  }
+
   const formStyle = css`
     display: flex;
     flex-direction: column;
@@ -179,7 +213,7 @@ export default function Signup() {
   const inputItemStyle = css`
     margin-bottom: 0.5rem;
     width: 100%;
-  `
+  `;
   const labelStyle = css`
     text-align: left;
   `;
@@ -270,14 +304,35 @@ export default function Signup() {
         </div>
         <Button onClick={() => sendEmail()}>認証メールを送信する</Button>
       </Card>
-      <Modal isOpen>
-        <div>
-          <p>認証メールを送信しました。</p>
-          <p>
-            3分以内にメール記載のリンクをクリックし、メール認証を完了させてください。
-          </p>
-          <p>このページは閉じてかまいません。</p>
-        </div>
+      <Modal isOpen={signupState !== SignupState.Input}>
+        {signupState === SignupState.SendingEmail && (
+          <div>認証メールを送信しています。</div>
+        )}
+        {signupState === SignupState.SendedEmail && (
+          <div>
+            <p>認証メールを送信しました。</p>
+            <p>
+              3分以内にメール記載のリンクをクリックし、ユーザー登録を完了させてください。
+            </p>
+            <p>このページは閉じてかまいません。</p>
+          </div>
+        )}
+        {signupState === SignupState.AlreadyRegistered && (
+          <div>
+            <div>メールアドレスは既に登録されています。</div>
+            <div>
+              <Button onClick={() => closePopup()}>OK</Button>
+            </div>
+          </div>
+        )}
+        {signupState === SignupState.FailedToSendEmail && (
+          <div>
+            <div>認証メールの送信に失敗しました。</div>
+            <div>
+              <Button onClick={() => closePopup()}>OK</Button>
+            </div>
+          </div>
+        )}
       </Modal>
     </>
   );
