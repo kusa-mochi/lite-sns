@@ -33,6 +33,7 @@ type Theme = {
       backgroundColor: string;
       cardColor: string;
       borderColor: string;
+      inputColor: string;
     };
   };
   typography: {
@@ -96,6 +97,7 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
           bodyBackgroundColor: "#fafafc",
           cardColor: "#ffffff",
           borderColor: "#bbbbbb",
+          inputColor: "#ffffff",
         },
       },
       typography: {
@@ -136,6 +138,7 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
           bodyBackgroundColor: "#fafafc",
           cardColor: "#f0f1fa",
           borderColor: "#999999",
+          inputColor: "#ffffff",
         },
       },
       typography: {

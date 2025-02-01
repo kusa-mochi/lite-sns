@@ -5,6 +5,7 @@ import { css } from "@emotion/css";
 import { callAPI } from "../utils/api_utils";
 import Card from "../components/atoms/card";
 import Modal from "../components/molecules/modal";
+import { useTheme } from "../providers/themeProvider";
 
 enum InputError {
   None = 0,
@@ -18,6 +19,7 @@ enum InputError {
 
 export default function Signup() {
   const config = useConfig();
+  const theme = useTheme();
   const MAX_LENGTH_USERNAME: number = 20;
   const MAX_LENGTH_EMAILADDRESS: number = 254;
   const MIN_LENGTH_PASSWORD: number = 12;
@@ -168,9 +170,16 @@ export default function Signup() {
   }
 
   const formStyle = css`
-    display: grid;
-    grid-template-columns: 216px 260px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
   `;
+  const inputItemStyle = css`
+    margin-bottom: 0.5rem;
+    width: 100%;
+  `
   const labelStyle = css`
     text-align: left;
   `;
@@ -179,6 +188,8 @@ export default function Signup() {
   `;
   const inputStyle = css`
     width: 100%;
+    background-color: ${theme.palette.base.inputColor};
+    color: ${theme.palette.secondary.fontColor};
   `;
   const invalidInputStyle = css`
     ${inputStyle}
@@ -189,62 +200,72 @@ export default function Signup() {
     <>
       <Card topBorder>
         <div className={formStyle}>
-          <div className={labelStyle}>
-            <span className={requireStyle}>*</span>ニックネーム
+          <div className={inputItemStyle}>
+            <div className={labelStyle}>
+              <span className={requireStyle}>*</span>ニックネーム
+            </div>
+            <div>
+              <input
+                className={isNicknameInvalid ? invalidInputStyle : inputStyle}
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder={`最大${MAX_LENGTH_USERNAME}文字`}
+                maxLength={MAX_LENGTH_USERNAME}
+                onBlur={() => validateNickname()}
+              />
+            </div>
           </div>
-          <div>
-            <input
-              className={isNicknameInvalid ? invalidInputStyle : inputStyle}
-              type="text"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder={`最大${MAX_LENGTH_USERNAME}文字`}
-              maxLength={MAX_LENGTH_USERNAME}
-              onBlur={() => validateNickname()}
-            />
+          <div className={inputItemStyle}>
+            <div className={labelStyle}>
+              <span className={requireStyle}>*</span>メールアドレス
+            </div>
+            <div>
+              <input
+                className={
+                  isEmailAddressInvalid ? invalidInputStyle : inputStyle
+                }
+                type="email"
+                value={emailAddress}
+                onChange={(e) => setEmailAddress(e.target.value)}
+                placeholder={"例: example@slash-mochi.net"}
+                maxLength={MAX_LENGTH_EMAILADDRESS}
+                onBlur={() => validateEmailAddress()}
+              />
+            </div>
           </div>
-          <div className={labelStyle}>
-            <span className={requireStyle}>*</span>メールアドレス
+          <div className={inputItemStyle}>
+            <div className={labelStyle}>
+              <span className={requireStyle}>*</span>登録するパスワード
+            </div>
+            <div>
+              <input
+                className={isPasswordInvalid ? invalidInputStyle : inputStyle}
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={`${MIN_LENGTH_PASSWORD}文字以上`}
+                maxLength={MAX_LENGTH_PASSWORD}
+                onBlur={() => validatePassword()}
+              />
+            </div>
           </div>
-          <div>
-            <input
-              className={isEmailAddressInvalid ? invalidInputStyle : inputStyle}
-              type="email"
-              value={emailAddress}
-              onChange={(e) => setEmailAddress(e.target.value)}
-              placeholder={"例: example@slash-mochi.net"}
-              maxLength={MAX_LENGTH_EMAILADDRESS}
-              onBlur={() => validateEmailAddress()}
-            />
-          </div>
-          <div className={labelStyle}>
-            <span className={requireStyle}>*</span>登録するパスワード
-          </div>
-          <div>
-            <input
-              className={isPasswordInvalid ? invalidInputStyle : inputStyle}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={`${MIN_LENGTH_PASSWORD}文字以上`}
-              maxLength={MAX_LENGTH_PASSWORD}
-              onBlur={() => validatePassword()}
-            />
-          </div>
-          <div className={labelStyle}>
-            <span className={requireStyle}>*</span>登録するパスワード（確認）
-          </div>
-          <div>
-            <input
-              className={
-                isPasswordConfirmInvalid ? invalidInputStyle : inputStyle
-              }
-              type="password"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              maxLength={MAX_LENGTH_PASSWORD}
-              onBlur={() => validatePasswordConfirm()}
-            />
+          <div className={inputItemStyle}>
+            <div className={labelStyle}>
+              <span className={requireStyle}>*</span>登録するパスワード（確認）
+            </div>
+            <div>
+              <input
+                className={
+                  isPasswordConfirmInvalid ? invalidInputStyle : inputStyle
+                }
+                type="password"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                maxLength={MAX_LENGTH_PASSWORD}
+                onBlur={() => validatePasswordConfirm()}
+              />
+            </div>
           </div>
         </div>
         <Button onClick={() => sendEmail()}>認証メールを送信する</Button>
