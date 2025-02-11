@@ -1,0 +1,11 @@
+{
+    "app": {
+        "api_prefix": "<api_prefix>",
+        "ip": "<ip>",
+        "port": 12345
+    },
+    "frontend": {
+        "ip": "<ip>",
+        "port": 12345
+    }
+}
