@@ -5,14 +5,15 @@ import {
   useEffect,
   useState,
 } from "react";
+import config from "../conf/release/lite-sns-client.json";
 
 // app server config
 // NOTE: この値は export せず、useConfig() の戻り値からアクセスして使う想定。
 const configData: LiteSnsClientConfig = {
   appServer: {
-    apiPrefix: "/lite-sns/api/v1",
-    ip: "localhost",
-    port: 12381,
+    apiPrefix: config.app.api_prefix,
+    ip: config.app.ip,
+    port: config.app.port,
   },
 };
 
