@@ -37,6 +37,14 @@ func (c *GetUserSecretKeyCommand) Exec(configs *server_configs.ServerConfigs, db
 		}
 		return
 	}
+	if len(selectData) == 0 {
+		log.Println("secret key not found on DB")
+		c.ResCh <- &GetUserSecretKeyRes{
+			SecretKey: "",
+			Error:     fmt.Errorf("bad request"),
+		}
+		return
+	}
 
 	userInfo := selectData[0]
 	secretKey := userInfo["access_token_secret_key"].(string)

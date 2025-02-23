@@ -42,6 +42,16 @@ func (c *GetUserInfoCommand) Exec(configs *server_configs.ServerConfigs, db *sql
 		}
 		return
 	}
+	if len(selectData) == 0 {
+		log.Println("user info not found on DB")
+		c.ResCh <- &GetUserInfoRes{
+			Username:            "",
+			IconType:            "",
+			IconBackgroundColor: "",
+			Error:               fmt.Errorf("bad request"),
+		}
+		return
+	}
 
 	userInfo := selectData[0]
 

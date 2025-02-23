@@ -30,7 +30,7 @@ func (s *ApiServer) GetTimeline(c *gin.Context) {
 		})
 		return
 	}
-	if userId < 0 {
+	if userId < 1 {
 		log.Printf("invalid user ID (ID=%v)", userId)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "bad request",
@@ -47,8 +47,8 @@ func (s *ApiServer) GetTimeline(c *gin.Context) {
 	result := <-resCh
 	if result.Error != nil {
 		log.Printf("failed to get timeline | %s", result.Error.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "internal server error",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "bad request",
 		})
 		return
 	}

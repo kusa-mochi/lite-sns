@@ -2,6 +2,7 @@ package commands
 
 import (
 	"database/sql"
+	"fmt"
 	db_utils "lite-sns/m/src/cmd/app_server/api_server_common/db"
 	"lite-sns/m/src/cmd/app_server/server_configs"
 	"log"
@@ -45,7 +46,15 @@ func (c *GetTimelineCommand) Exec(configs *server_configs.ServerConfigs, db *sql
 		log.Printf("failed to get timeline data from DB | %s", err.Error())
 		c.ResCh <- &GetTimelineRes{
 			Timeline: nil,
-			Error:    err,
+			Error:    fmt.Errorf("bad request | %s", err.Error()),
+		}
+		return
+	}
+	if len(selectData) == 0 {
+		log.Println("timeline data not found")
+		c.ResCh <- &GetTimelineRes{
+			Timeline: nil,
+			Error:    fmt.Errorf("bad request"),
 		}
 		return
 	}
