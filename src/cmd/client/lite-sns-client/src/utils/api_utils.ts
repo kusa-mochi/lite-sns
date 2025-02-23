@@ -22,11 +22,12 @@ export function callAPI(
   xmlHttpReq.onreadystatechange = function () {
     const READYSTATE_COMPLETED: number = 4;
     const HTTP_STATUS_OK: number = 200;
-    if (
-      this.readyState === READYSTATE_COMPLETED &&
-      this.status === HTTP_STATUS_OK
-    ) {
-      onSuccess(JSON.parse(this.response));
+    console.log(`ready state: ${this.readyState}`)
+    console.log(`status: ${this.status}`)
+    if (this.status === HTTP_STATUS_OK || this.status === 0) {
+      if (this.readyState === READYSTATE_COMPLETED) {
+        onSuccess(JSON.parse(this.response));
+      }
     } else {
       if (onFailure) {
         onFailure(JSON.parse(this.response));

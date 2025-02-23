@@ -6,9 +6,11 @@ import { callAPI } from "../utils/api_utils";
 import { Auth, setAuthType, useSetAuth } from "../providers/authProvider";
 import { useNavigate } from "react-router";
 import Card from "../components/atoms/card";
+import { useTheme } from "../providers/themeProvider";
 
 export default function Signin() {
   const config = useConfig();
+  const theme = useTheme();
   const MAX_LENGTH_EMAILADDRESS: number = 254;
   const MAX_LENGTH_PASSWORD: number = 128;
 
@@ -89,8 +91,15 @@ export default function Signin() {
   }, [emailAddress, password]);
 
   const formStyle = css`
-    display: grid;
-    grid-template-columns: 216px 260px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+  `;
+  const inputItemStyle = css`
+    margin-bottom: 0.5rem;
+    width: 100%;
   `;
   const labelStyle = css`
     text-align: left;
@@ -100,35 +109,45 @@ export default function Signin() {
   `;
   const inputStyle = css`
     width: 100%;
+    background-color: ${theme.palette.base.inputColor};
+    color: ${theme.palette.secondary.fontColor};
+  `;
+  const invalidInputStyle = css`
+    ${inputStyle}
+    background-color: #ffd6d6;
   `;
 
   return (
     <Card topBorder>
       <div className={formStyle}>
-        <div className={labelStyle}>
-          <span className={requireStyle}>*</span>メールアドレス
+        <div className={inputItemStyle}>
+          <div className={labelStyle}>
+            <span className={requireStyle}>*</span>メールアドレス
+          </div>
+          <div>
+            <input
+              className={inputStyle}
+              type="email"
+              value={emailAddress}
+              onChange={onEmailAddrChanged}
+              placeholder={"例: example@slash-mochi.net"}
+              maxLength={MAX_LENGTH_EMAILADDRESS}
+            />
+          </div>
         </div>
-        <div>
-          <input
-            className={inputStyle}
-            type="email"
-            value={emailAddress}
-            onChange={onEmailAddrChanged}
-            placeholder={"例: example@slash-mochi.net"}
-            maxLength={MAX_LENGTH_EMAILADDRESS}
-          />
-        </div>
-        <div className={labelStyle}>
-          <span className={requireStyle}>*</span>パスワード
-        </div>
-        <div>
-          <input
-            className={inputStyle}
-            type="password"
-            value={password}
-            onChange={onPasswordChanged}
-            maxLength={MAX_LENGTH_PASSWORD}
-          />
+        <div className={inputItemStyle}>
+          <div className={labelStyle}>
+            <span className={requireStyle}>*</span>パスワード
+          </div>
+          <div>
+            <input
+              className={inputStyle}
+              type="password"
+              value={password}
+              onChange={onPasswordChanged}
+              maxLength={MAX_LENGTH_PASSWORD}
+            />
+          </div>
         </div>
       </div>
       <Button disabled={!isSigninEnabled} onClick={() => signin()}>

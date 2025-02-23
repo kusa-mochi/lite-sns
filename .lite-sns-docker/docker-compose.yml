@@ -13,10 +13,10 @@ services:
     volumes:
       - ../:/project
     tty: true
-    # networks:
-    #   default:
-    #   lite-sns-net:
-    #     ipv4_address: ${APP_SERVER_IP}
+    networks:
+      default:
+      lite-sns-net:
+        ipv4_address: ${APP_SERVER_IP}
   db:
     image: postgres:17.0-alpine3.20
     restart: always
@@ -27,25 +27,25 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: postgres
-    # networks:
-    #   lite-sns-net:
-    #     ipv4_address: ${DB_SERVER_IP}
+    networks:
+      lite-sns-net:
+        ipv4_address: ${DB_SERVER_IP}
   adminer:
     image: adminer
     restart: always
     ports:
       - ${ADMINER_PORT}:8080
-    # networks:
-    #   default:
-    #   lite-sns-net:
-    #     ipv4_address: ${ADMINER_IP}
+    networks:
+      default:
+      lite-sns-net:
+        ipv4_address: ${ADMINER_IP}
 
-# networks:
-#   default:
-#   lite-sns-net:
-#     name: lite-sns-net
-#     driver: bridge
-#     ipam:
-#       driver: default
-#       config:
-#         - subnet: ${LITE_SNS_SUBNET}
+networks:
+  default:
+  lite-sns-net:
+    name: lite-sns-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${LITE_SNS_SUBNET}
