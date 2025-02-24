@@ -16,21 +16,39 @@ export function callAPI(
   userId: number,
   accessToken: string | null,
   onSuccess: (response: any) => void,
-  onFailure?: (response: any) => void
+  onFailure?: (response: any) => void,
+  onRedirect?: (response: any) => void
 ) {
   const xmlHttpReq = new XMLHttpRequest();
   xmlHttpReq.onreadystatechange = function () {
     const READYSTATE_COMPLETED: number = 4;
     const HTTP_STATUS_OK: number = 200;
-    console.log(`ready state: ${this.readyState}`)
-    console.log(`status: ${this.status}`)
+    const HTTP_SEE_OTHER: number = 303;
+    console.log(`ready state: ${this.readyState}`);
+    console.log(`status: ${this.status}`);
+    const res = (() => {
+      try {
+        const r = JSON.parse(this.response)
+        return r
+      } catch {
+        // this.responseがJSON形式に変換できない場合、resをnullで初期化する。
+        return null
+      }
+    })()
+
     if (this.status === HTTP_STATUS_OK || this.status === 0) {
       if (this.readyState === READYSTATE_COMPLETED) {
-        onSuccess(JSON.parse(this.response));
+        onSuccess(res);
+      }
+    } else if (this.status === HTTP_SEE_OTHER) {
+      alert("see other")
+      if (onRedirect) {
+        console.log("redirecting...")
+        onRedirect(res);
       }
     } else {
       if (onFailure) {
-        onFailure(JSON.parse(this.response));
+        onFailure(res);
       }
     }
   };
