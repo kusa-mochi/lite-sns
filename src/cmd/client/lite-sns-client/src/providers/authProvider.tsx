@@ -19,9 +19,15 @@ export type Auth = {
   tokenString: string;
 };
 
+// 初期値（string型である点に注意）
+const initialUserIdString: string = localStorage.getItem("userId") ?? "-1";
+const initialTokenString: string = localStorage.getItem("tokenString") ?? "";
+
+const initialUserId: number = Math.round(Number(initialUserIdString));
+
 const initialAuth: Auth = {
-  userId: -1,
-  tokenString: "",
+  userId: initialUserId,
+  tokenString: initialTokenString,
 };
 
 const AuthContext = createContext<Auth>(initialAuth);
@@ -48,12 +54,16 @@ const authReducer: Reducer<Auth, ActionType> = (
   switch (action.type) {
     case setAuthType:
       console.log("set auth reducer");
+      localStorage.setItem("userId", action.payload.userId.toString());
+      localStorage.setItem("tokenString", action.payload.tokenString);
       return {
         userId: action.payload.userId,
         tokenString: action.payload.tokenString,
       };
     case clearAuthType:
       console.log("clear auth reducer");
+      localStorage.setItem("userId", initialAuth.userId.toString());
+      localStorage.setItem("tokenString", initialAuth.tokenString);
       return initialAuth;
     default:
       console.log("default auth reducer");

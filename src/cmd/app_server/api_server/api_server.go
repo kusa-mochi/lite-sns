@@ -106,9 +106,13 @@ func (s *ApiServer) ValidateTokenMiddleware(c *gin.Context) {
 	res := <-resCh
 	if res.Error != nil {
 		log.Println("failed to get a secret key corresponding to the user ID |", res.Error.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "bad request",
-		})
+		redirectTo := fmt.Sprintf("http://%s:%v/signin", s.configs.Frontend.Ip, s.configs.Frontend.Port)
+		log.Println("redirecting to", redirectTo)
+		c.Redirect(
+			http.StatusSeeOther,
+			redirectTo,
+		)
+		c.Abort()
 		return
 	}
 
@@ -123,9 +127,13 @@ func (s *ApiServer) ValidateTokenMiddleware(c *gin.Context) {
 	})
 	if err != nil {
 		log.Println("failed to parse a token |", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "bad request",
-		})
+		redirectTo := fmt.Sprintf("http://%s:%v/signin", s.configs.Frontend.Ip, s.configs.Frontend.Port)
+		log.Println("redirecting to", redirectTo)
+		c.Redirect(
+			http.StatusSeeOther,
+			redirectTo,
+		)
+		c.Abort()
 		return
 	}
 

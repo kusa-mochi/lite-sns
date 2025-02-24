@@ -72,7 +72,7 @@ export default function Signup() {
       null,
       (response: any) => {
         console.log("sending email succeeded");
-        console.log(response.result);
+        console.log(response)
 
         // TODO: メール送信の成功／失敗をメッセージに表示する。
         switch (response.result) {

@@ -46,5 +46,5 @@ func (s *ApiServer) MailAddrAuth(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusMovedPermanently, result.RedirectTo)
+	c.Redirect(http.StatusSeeOther, result.RedirectTo)
 }
