@@ -4,10 +4,12 @@ import { useConfig } from "../providers/configProvider";
 import { useAuth } from "../providers/authProvider";
 import Card from "../components/atoms/card";
 import { css } from "@emotion/css";
+import { useNavigate } from "react-router";
 
 export default function Timeline() {
   const config = useConfig();
   const auth = useAuth(); // ユーザーIDなどの情報
+  const navigate = useNavigate()
   const [username, setUsername] = useState("");
   const [posts, setPosts] = useState([]);
 
@@ -22,9 +24,18 @@ export default function Timeline() {
       auth.userId,
       auth.tokenString,
       (response: any) => {
-        console.log(`username: ${response.username}`);
+        if (!response || !response.username) {
+          console.log(`redirecting to /signin`)
+          navigate("/signin")
+          return
+        }
         setUsername(response.username);
-      }
+      },
+      undefined,
+      (response: any) => {
+        console.log(`redirecting to /signin`)
+        navigate("/signin")
+      },
     );
 
     // TODO: APIサーバーからタイムラインに表示する投稿の情報を取得する。
@@ -37,9 +48,18 @@ export default function Timeline() {
       auth.userId,
       auth.tokenString,
       (response: any) => {
-        console.log(response);
+        if (!response || !response.timeline) {
+          console.log(`redirecting to /signin`)
+          navigate("/signin")
+          return
+        }
         setPosts(() => response.timeline);
-      }
+      },
+      undefined,
+      (response: any) => {
+        console.log(`redirecting to /signin`)
+        navigate("/signin")
+      },
     );
   }, [auth]);
 
