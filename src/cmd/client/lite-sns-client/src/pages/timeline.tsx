@@ -5,8 +5,8 @@ import { useAuth } from "../providers/authProvider";
 import Card from "../components/atoms/card";
 import { css } from "@emotion/css";
 import { useNavigate } from "react-router";
-import MenuButton from "../components/molecules/menu_button";
 import { useTheme } from "../providers/themeProvider";
+import MenuBar from "../components/organisms/menu_bar";
 
 export default function Timeline() {
   const theme = useTheme()
@@ -85,22 +85,6 @@ export default function Timeline() {
     margin: ${menuHeight}px 0;
   `;
 
-  const menuStyle = css`
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: ${menuHeight}px;
-    background-color: ${theme.palette.base.bodyBackgroundColor};
-
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: center;
-    align-content: space-around;
-  `
-
   return (
     <div className={pageStyle}>
       <div>{username}&nbsp;としてサインインしています。</div>
@@ -118,12 +102,7 @@ export default function Timeline() {
         );
       })}
       <div className={timelineEndStyle}></div>
-      <div className={menuStyle}>
-        <MenuButton>AAA</MenuButton>
-        <MenuButton>AAA</MenuButton>
-        <MenuButton>AAA</MenuButton>
-        <MenuButton>AAA</MenuButton>
-      </div>
+      <MenuBar height={`${menuHeight}px`} />
     </div>
   );
 }
