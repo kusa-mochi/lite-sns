@@ -3,7 +3,7 @@ import { useTheme } from "../../providers/themeProvider"
 import MenuButton from "../molecules/menu_button"
 
 type Props = {
-    height: string
+    height?: string
 }
 
 export default function MenuBar (props: Props) {
