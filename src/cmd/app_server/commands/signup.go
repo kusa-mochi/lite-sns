@@ -128,7 +128,7 @@ func (c *SignupCommand) Exec(configs *server_configs.ServerConfigs, db *sql.DB) 
 
 	// サインアップ用アクセストークンを発行する。
 	// アクセストークンには有効期限が設定されている。
-	const tokenLifetime time.Duration = 10 * time.Minute
+	const tokenLifetime time.Duration = 3 * time.Minute
 	var expirationDatetime int64 = time.Now().Add(tokenLifetime).Unix()
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
