@@ -5,13 +5,17 @@ import { useAuth } from "../providers/authProvider";
 import Card from "../components/atoms/card";
 import { css } from "@emotion/css";
 import { useNavigate } from "react-router";
+import MenuButton from "../components/molecules/menu_button";
+import { useTheme } from "../providers/themeProvider";
 
 export default function Timeline() {
+  const theme = useTheme()
   const config = useConfig();
   const auth = useAuth(); // ユーザーIDなどの情報
   const navigate = useNavigate()
   const [username, setUsername] = useState("");
   const [posts, setPosts] = useState([]);
+  const [menuHeight, setMenuHeight] = useState(40)
 
   useEffect(() => {
     console.log(`tokenString: ${auth.tokenString}`);
@@ -40,8 +44,7 @@ export default function Timeline() {
 
     // TODO: APIサーバーからタイムラインに表示する投稿の情報を取得する。
     callAPI(
-      `http://${config.appServer.ip}:${config.appServer.port}${
-        config.appServer.apiPrefix
+      `http://${config.appServer.ip}:${config.appServer.port}${config.appServer.apiPrefix
       }/auth_user/get_timeline?current_oldest_post_id=${50}`,
       "GET",
       {},
@@ -79,8 +82,24 @@ export default function Timeline() {
 
   const timelineEndStyle = css`
     width: 100%;
-    margin: 16px 0;
+    margin: ${menuHeight}px 0;
   `;
+
+  const menuStyle = css`
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: ${menuHeight}px;
+    background-color: ${theme.palette.base.bodyBackgroundColor};
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    align-content: space-around;
+  `
 
   return (
     <div className={pageStyle}>
@@ -99,6 +118,12 @@ export default function Timeline() {
         );
       })}
       <div className={timelineEndStyle}></div>
+      <div className={menuStyle}>
+        <MenuButton>AAA</MenuButton>
+        <MenuButton>AAA</MenuButton>
+        <MenuButton>AAA</MenuButton>
+        <MenuButton>AAA</MenuButton>
+      </div>
     </div>
   );
 }
