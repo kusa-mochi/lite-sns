@@ -4,6 +4,10 @@ import MenuButton from "../molecules/menu_button"
 import { useState } from "react"
 import UserIcon_Default from "../icons/UserIcon_Default"
 import { useNavigate } from "react-router"
+import HomeIcon from "../icons/HomeIcon"
+import SearchIcon from "../icons/SearchIcon"
+import PostIcon from "../icons/PostIcon"
+import ActivitiesIcon from "../icons/ActivitiesIcon"
 
 type Props = {
     height?: string
@@ -38,20 +42,16 @@ export default function MenuBar(props: Props) {
     return (
         <div className={menuStyle}>
             <MenuButton width={menuButtonWidth} onClick={() => GoTo("/timeline")}>
-                {/* TODO: 「タイムライン」アイコンに差し替える。 */}
-                <UserIcon_Default width="24px" height="24px" />
+                <HomeIcon width="24px" height="24px" />
             </MenuButton>
             <MenuButton width={menuButtonWidth} onClick={() => GoTo("/search")}>
-                {/* TODO: 「検索」アイコンに差し替える。 */}
-                <UserIcon_Default width="24px" height="24px" headColor="red" bodyColor="green" />
+                <SearchIcon width="24px" height="24px" />
             </MenuButton>
             <MenuButton width={menuButtonWidth} onClick={() => GoTo("/post")}>
-                {/* TODO: 「投稿」アイコン（"＋"アイコンとか）に差し替える。 */}
-                <UserIcon_Default width="24px" height="24px" />
+                <PostIcon width="24px" height="24px" />
             </MenuButton>
             <MenuButton width={menuButtonWidth} onClick={() => GoTo("/activities")}>
-                {/* TODO: 「アクティビティ」アイコンに差し替える。 */}
-                <UserIcon_Default width="24px" height="24px" />
+                <ActivitiesIcon width="24px" height="24px" />
             </MenuButton>
             <MenuButton width={menuButtonWidth} onClick={() => GoTo("/user")}>
                 <UserIcon_Default width="24px" height="24px" />
