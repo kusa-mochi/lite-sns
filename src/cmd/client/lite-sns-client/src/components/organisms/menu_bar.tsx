@@ -43,7 +43,7 @@ export default function MenuBar(props: Props) {
             </MenuButton>
             <MenuButton width={menuButtonWidth} onClick={() => GoTo("/search")}>
                 {/* TODO: 「検索」アイコンに差し替える。 */}
-                <UserIcon_Default width="24px" height="24px" />
+                <UserIcon_Default width="24px" height="24px" headColor="red" bodyColor="green" />
             </MenuButton>
             <MenuButton width={menuButtonWidth} onClick={() => GoTo("/post")}>
                 {/* TODO: 「投稿」アイコン（"＋"アイコンとか）に差し替える。 */}
