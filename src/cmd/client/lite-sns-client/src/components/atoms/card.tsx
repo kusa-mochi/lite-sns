@@ -14,7 +14,7 @@ export default function Card (props: Props) {
     const cardStyle = css`
         width: 100%;
         background-color: ${theme.palette.base.cardColor};
-        padding: 2rem;
+        padding: 1.2rem;
         ${topBorder ? `border-top: 1px solid ${theme.palette.base.borderColor};` : ""}
         border-bottom: 1px solid ${theme.palette.base.borderColor};
     `
