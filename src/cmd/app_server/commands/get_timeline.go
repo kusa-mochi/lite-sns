@@ -34,10 +34,10 @@ func (c *GetTimelineCommand) Exec(configs *server_configs.ServerConfigs, db *sql
 	log.Println("get timeline exec")
 	log.Println("db command params:", c.CurrentOldestPostId, configs.App.TimelinePostNumber)
 
-	// ユーザー以外の投稿をDBから取得する。
+	// 最新の投稿をDBから取得する。
 	selectData, err := db_utils.Query(
 		db,
-		"SELECT post.id, post.user_id, post.text, post.created_at, sns_user.name, sns_user.icon_background_color FROM post INNER JOIN sns_user ON post.user_id <> sns_user.id WHERE post.id < $1 ORDER BY post.id DESC LIMIT $2",
+		"SELECT post.id, post.user_id, post.text, post.created_at, sns_user.name, sns_user.icon_background_color FROM post INNER JOIN sns_user ON post.user_id = sns_user.id WHERE post.id < $1 ORDER BY post.id DESC LIMIT $2",
 		c.CurrentOldestPostId,
 		configs.App.TimelinePostNumber,
 	)
