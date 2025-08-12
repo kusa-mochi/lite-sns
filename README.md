@@ -12,7 +12,7 @@ You must make config files and set params. Their format is as in debug dir's.
 ### Run a devenvs
 
 1. Run the dev container using command `docker compose up -d` in the dir `./.lite-sns-docker`.
-1. Attach the container using VSCode Docker extensions.
+1. Attach a "lite-sns-devenvs" container using VSCode Docker extensions.
 1. Open `/project` dir in attaching VSCode window.
 
 ### Initialize DB tables
