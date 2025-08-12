@@ -14,8 +14,8 @@ type Props = {
 }
 
 export default function Button (props: Props) {
-    const theme = useTheme()
     const { children, active, disabled, primary, secondary, width, height, onClick } = props
+    const theme = useTheme()
     const [activeState, setActiveState] = useState(false)
     const [bgColor, setBgColor] = useState(theme.palette.secondary.main)
     const [fColor, setFColor] = useState(theme.palette.secondary.fontColor)
