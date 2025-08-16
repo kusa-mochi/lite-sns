@@ -35,7 +35,7 @@ services:
   # サーバ：上記 db サービスの container_name を参照すること。
   # ユーザ名：上記 db サービスの environment を参照すること。
   # パスワード：上記 db サービスの environment を参照すること。
-  # データベース：空欄
+  # データベース：lite_sns_db
   adminer:
     image: adminer
     restart: always
