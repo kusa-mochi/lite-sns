@@ -30,6 +30,12 @@ services:
     networks:
       lite-sns-net:
         ipv4_address: ${DB_SERVER_IP}
+  # ADMINER ログイン情報（ウェブブラウザからログインすること）
+  # データベース種類：PostgreSQL
+  # サーバ：上記 db サービスの container_name を参照すること。
+  # ユーザ名：上記 db サービスの environment を参照すること。
+  # パスワード：上記 db サービスの environment を参照すること。
+  # データベース：空欄
   adminer:
     image: adminer
     restart: always
