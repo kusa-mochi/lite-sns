@@ -140,7 +140,15 @@ func CreateTable(db *sql.DB, tableAttr *TableAttr) {
 	}
 }
 
-func AddTestRecords(db *sql.DB) {
+func AddTestUserRecords(db *sql.DB) {
+	const (
+		prepare string = "INSERT INTO sns_user(name, icon_type, icon_background_color, email_address, password_hash, access_token_secret_key) VALUES ($1, $2, $3, $4, $5, $6)"
+	)
+
+	stmt, _ := db.Prepare(prepare)
+}
+
+func AddTestPostRecords(db *sql.DB) {
 	const (
 		prepare string = "INSERT INTO post(user_id, text, created_at, updated_at) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8), ($9, $10, $11, $12)"
 	)
@@ -180,6 +188,11 @@ func AddTestRecords(db *sql.DB) {
 		datetime1 = datetime1.Add(12 * time.Hour)
 		datetime2 = datetime2.Add(12 * time.Hour)
 	}
+}
+
+func AddTestRecords(db *sql.DB) {
+	AddTestUserRecords(db)
+	AddTestPostRecords(db)
 }
 
 func main() {

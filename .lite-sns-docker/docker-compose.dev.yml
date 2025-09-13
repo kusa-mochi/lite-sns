@@ -1,22 +1,4 @@
 services:
-  # lite-sns-devenvs:
-  #   image: whoatemyapplepie/lite-sns-devenvs:1.0.0
-  #   build:
-  #     context: .
-  #     args:
-  #       - WEB_SERVER_PORT=${WEB_SERVER_PORT}
-  #       - APP_SERVER_PORT=${APP_SERVER_PORT}
-  #   container_name: lite-sns-devenvs
-  #   ports:
-  #     - ${WEB_SERVER_PORT}:${WEB_SERVER_PORT}
-  #     - ${APP_SERVER_PORT}:${APP_SERVER_PORT}
-  #   volumes:
-  #     - ../:/project
-  #   tty: true
-  #   networks:
-  #     default:
-  #     lite-sns-net:
-  #       ipv4_address: ${APP_SERVER_IP}
   db:
     image: postgres:17.0-alpine3.20
     restart: always
@@ -30,6 +12,12 @@ services:
     networks:
       lite-sns-net:
         ipv4_address: ${DB_SERVER_IP}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d lite_sns_db || exit 1"]
+      interval: 10s
+      timeout: 21s
+      retries: 5
+      start_period: 5s
   # ADMINER ログイン情報（ウェブブラウザからログインすること）
   # データベース種類：PostgreSQL
   # サーバ：上記 db サービスの container_name を参照すること。
@@ -45,6 +33,41 @@ services:
       default:
       lite-sns-net:
         ipv4_address: ${ADMINER_IP}
+  
+  run_app_server:
+    image: whoatemyapplepie/lite-sns-devenvs:1.0.0
+    container_name: run_app_server
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../:/project
+    ports:
+      - ${APP_SERVER_PORT}:${APP_SERVER_PORT}
+    tty: true
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: postgres
+    command:
+      - /bin/sh
+      - -c
+      - |
+        chmod +x /project/.dev_scripts/run_app_server.sh
+        /project/.dev_scripts/run_app_server.sh
+  run_lite-sns-client:
+    image: whoatemyapplepie/lite-sns-devenvs:1.0.0
+    container_name: run_lite-sns-client
+    volumes:
+      - ../:/project
+    ports:
+      - ${WEB_SERVER_PORT}:${WEB_SERVER_PORT}
+    tty: true
+    command:
+      - /bin/sh
+      - -c
+      - |
+        chmod +x /project/.dev_scripts/run_lite-sns-client.sh
+        /project/.dev_scripts/run_lite-sns-client.sh
 
 networks:
   default:
