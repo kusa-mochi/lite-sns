@@ -24,6 +24,15 @@ You must make config files and set params. Their format is as in debug dir's.
     ```
     You can close this terminal.
 
+1. You can login to lite-sns using these test user data after starting the backend server and the frontend:
+    
+    |No.|email address|password|
+    |---:|:---|:---|
+    |1|lite-sns_dev-admin@slash-mochi.net|123412341234|
+    |2|lite-sns_dev-user1@slash-mochi.net|abcdefghijklmnop|
+    |3|lite-sns_dev-user2@slash-mochi.net|this_is_a_password|
+    |4|lite-sns_dev-user3@slash-mochi.net|this-is-a-password-too|
+
 ### Run a backend server
 
 1. Open a terminal in the VSCode window and run command:
